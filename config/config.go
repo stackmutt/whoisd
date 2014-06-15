@@ -16,7 +16,7 @@ const (
 	defaultPort        = 43
 	defaultWorkers     = 1000
 	defaultConnections = 1000
-	defaultStorageType = "Elasticsearch"
+	defaultStorageType = "Dummy"
 	defaultStorageHost = "localhost"
 	defaultStoragePort = 9200
 	defaultIndexBase   = "whois"

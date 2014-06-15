@@ -8,6 +8,7 @@ import (
 
 	"github.com/takama/whoisd/config"
 	"github.com/takama/whoisd/mapper"
+	"github.com/takama/whoisd/storage/dummy"
 	"github.com/takama/whoisd/storage/elasticsearch"
 	"github.com/takama/whoisd/storage/mysql"
 )
@@ -37,10 +38,20 @@ func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
 			mapp,
 		}
 	case "elasticsearch":
+		return &StorageRecord{
+			&elasticsearch.ElasticsearchRecord{
+				conf.Storage.Host,
+				conf.Storage.Port,
+				conf.Storage.IndexBase,
+				conf.Storage.TypeTable,
+			},
+			mapp,
+		}
+	case "dummy":
 		fallthrough
 	default:
 		return &StorageRecord{
-			&elasticsearch.ElasticsearchRecord{
+			&dummy.DummyRecord{
 				conf.Storage.Host,
 				conf.Storage.Port,
 				conf.Storage.IndexBase,
@@ -92,7 +103,8 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 
 	// Loads prearranged values
 	for index, record := range storage.Mapper.Fields {
-		if len(record.Value) != 0 {
+		if len(record.Value) != 0 && len(record.Related) == 0 &&
+			len(record.RelatedBy) == 0 && len(record.RelatedTo) == 0 {
 			mapp.Fields[index] = mapper.MapperField{
 				Key:      record.Key,
 				Value:    record.Value,
@@ -138,23 +150,29 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 	// Loads related records
 	for index, record := range storage.Mapper.Fields {
 		// Check for related record
-		if len(record.Value) == 0 &&
-			len(record.RelatedBy) != 0 && len(record.RelatedTo) != 0 && len(record.Related) != 0 {
+		if len(record.RelatedBy) != 0 && len(record.RelatedTo) != 0 && len(record.Related) != 0 {
 			answer := []string{}
+			nameToAsk := record.RelatedBy
+			queryRelated := strings.Join(baseRecord[record.Related], "")
+
+			// if non-related record from specified type/table
+			if len(record.Value) != 0 {
+				queryRelated = record.Value[0]
+			}
 
 			// if record not cached, do it
 			if _, ok := relatedRecord[record.Related]; ok == false {
 				if record.Multiple {
 					relatedRecord[record.Related], err = storage.CurrentStorage.SearchMultiple(
 						record.RelatedTo,
-						record.RelatedBy,
-						strings.Join(baseRecord[record.Related], ""),
+						nameToAsk,
+						queryRelated,
 					)
 				} else {
 					relatedRecord[record.Related], err = storage.CurrentStorage.SearchRelated(
 						record.RelatedTo,
-						record.RelatedBy,
-						strings.Join(baseRecord[record.Related], ""),
+						nameToAsk,
+						queryRelated,
 					)
 				}
 			}

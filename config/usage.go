@@ -17,7 +17,7 @@ Options:
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)
   -conn=<number>    Number of active connections (default 1000)
-  -storage=<type>   Type of storage (Elasticsearch or Mysql)
+  -storage=<type>   Type of storage (Elasticsearch, Mysql or Dummy for testing)
   -shost=<host/IP>  Storage host name or IP address
   -sport=<port>     Storage port number
   -base=<name>      Storage index or database name

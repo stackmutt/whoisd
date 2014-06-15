@@ -51,7 +51,7 @@ Options:
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)
   -conn=<number>    Number of active connections (default 1000)
-  -storage=<type>   Type of storage (Elasticsearch or Mysql)
+  -storage=<type>   Type of storage (Elasticsearch, Mysql or Dummy for testing)
   -shost=<host/IP>  Storage host name or IP address
   -sport=<port>     Storage port number
   -base=<name>      Storage index or database name
@@ -159,6 +159,23 @@ Name Server: ns3.example.com
 ```json
 {
 
+    "13": {
+      "key": "Registry Registrant ID: ",
+      "name": ["handle"],
+      "hide": true,
+      "related": "ownerHandle",
+      "relatedBy": "handle",
+      "relatedTo": "customer"
+    },
+
+}
+```
+
+- "hide" - if this option is set to 'true', the value of the field will not shown in the whois output
+
+```json
+{
+
     "14": {
       "key": "Registrant Name: ",
       "name": ["name.fullName"],
@@ -212,6 +229,11 @@ Name Server: ns3.example.com
 
 - example of the formating where used {date} and name field has not present, the result is {date} will be replaced by current date in RFC3339 format
 
+## TODO
+
+- in memory storage(database)
+- Rest API
+- update strorage records by Rest API
 
 Copyright (c) 2014 Igor Dolzhikov
 
