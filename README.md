@@ -77,6 +77,16 @@ Default configuration file placed in /etc/whoisd/whoisd.conf. Of course possible
   }
 }
 ```
+_NOTE_: dummy storage has two records for testing: example.tld and google.com. You can test it by the command 
+```sh
+whois -h localhost example.tld
+```
+or
+```sh
+whois -h localhost google.com
+```
+These fixtures placed in "storage/dummy" package directory.
+
 
 ### Mapping
 
@@ -232,7 +242,7 @@ Name Server: ns3.example.com
 
 ### TODO
 
-- in memory storage (database)
+- in memory storage
 - Rest API
 - update strorage records by Rest API
 
