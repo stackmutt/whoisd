@@ -60,7 +60,7 @@ Options:
 
 ### Config
 
-Default configuration file placed in /etc/whoisd/whoisd.conf. Of course possible to load a configuration from any other place through parameters on the command line. If the configuration file is absent, then used the default configuration: 
+Default config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through parameters on the command line. If the config file is absent, then used the default configuration: 
 
 ```json
 {
@@ -77,7 +77,7 @@ Default configuration file placed in /etc/whoisd/whoisd.conf. Of course possible
   }
 }
 ```
-_NOTE_: dummy storage has two records for testing: example.tld and google.com. You can test it by the command 
+_NOTE_: dummy storage has two records for testing: "example.tld" and "google.com". You can test it by the command 
 ```sh
 whois -h localhost example.tld
 ```
@@ -90,7 +90,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for the whoisd must be defined in the mapping file, the example mapping file is described below:
+All required fields for the whoisd must be defined in the mapping file, the example of the mapping file is described below:
 
 ```json
 {
@@ -113,11 +113,11 @@ All required fields for the whoisd must be defined in the mapping file, the exam
 }
 ```
 
-- "Fields" - the list of fields from "01" to last number "nn" in ascending order
-- "key" - the prompt for the field (the preinstalled configuration file has keys according to ICANN requirements)
+- "Fields" - the list of a fields from "01" to last number "nn" in ascending order
+- "key" - the prompt for the field (preinstalled config file has keys according to ICANN requirements)
 - "value" - if the field has prearranged value (not use any field from the database)
-- "name" - field name in the database, if the field is not prearranged ("value" is not defined)
-- "related" - field name in the database through which the request for 
+- "name" - the field name in the database, if the field is not prearranged ("value" is not defined)
+- "related" - the field name in the database through which the request for 
 
 ```json
 {

@@ -149,7 +149,6 @@
     "26": {
       "key": "Registry Admin ID: ",
       "name": ["handle"],
-      "hide": true,
       "related": "adminHandle",
       "relatedBy": "handle",
       "relatedTo": "customer"
@@ -237,7 +236,6 @@
     "39": {
       "key": "Registry Tech ID: ",
       "name": ["handle"],
-      "hide": true,
       "related": "techHandle",
       "relatedBy": "handle",
       "relatedTo": "customer"

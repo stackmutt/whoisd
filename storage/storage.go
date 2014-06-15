@@ -110,6 +110,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 				Value:    record.Value,
 				Format:   record.Format,
 				Multiple: record.Multiple,
+				Hide:     record.Hide,
 			}
 		}
 	}
@@ -143,6 +144,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 				Value:    answer,
 				Format:   record.Format,
 				Multiple: record.Multiple,
+				Hide:     record.Hide,
 			}
 		}
 	}
@@ -187,6 +189,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 				Value:    answer,
 				Format:   record.Format,
 				Multiple: record.Multiple,
+				Hide:     record.Hide,
 			}
 		}
 	}
@@ -197,18 +200,22 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 func prepareAnswer(mapp *mapper.MapperRecord, keys []string) (answer string) {
 	for _, index := range keys {
 		key := mapp.Fields[index].Key
-		if mapp.Fields[index].Multiple == true {
-			for _, value := range mapp.Fields[index].Value {
+		if mapp.Fields[index].Hide == true {
+			answer = strings.Join([]string{answer, key, "", "\n"}, "")
+		} else {
+			if mapp.Fields[index].Multiple == true {
+				for _, value := range mapp.Fields[index].Value {
+					answer = strings.Join([]string{answer, key, value, "\n"}, "")
+				}
+			} else {
+				var value string
+				if mapp.Fields[index].Format != "" {
+					value = customJoin(mapp.Fields[index].Format, mapp.Fields[index].Value)
+				} else {
+					value = strings.Join(mapp.Fields[index].Value, " ")
+				}
 				answer = strings.Join([]string{answer, key, value, "\n"}, "")
 			}
-		} else {
-			var value string
-			if mapp.Fields[index].Format != "" {
-				value = customJoin(mapp.Fields[index].Format, mapp.Fields[index].Value)
-			} else {
-				value = strings.Join(mapp.Fields[index].Value, " ")
-			}
-			answer = strings.Join([]string{answer, key, value, "\n"}, "")
 		}
 	}
 
