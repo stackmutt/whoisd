@@ -60,7 +60,7 @@ Options:
 
 ### Config
 
-Default config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through parameters on the command line. If the config file is absent, then used the default configuration: 
+Default config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through parameters of command line. If config file is absent, used default configuration below: 
 
 ```json
 {
@@ -77,7 +77,7 @@ Default config file located in /etc/whoisd/whoisd.conf. Of course possible to lo
   }
 }
 ```
-_NOTE_: dummy storage has two records for testing: "example.tld" and "google.com". You can test it by the command 
+_NOTE_: dummy storage has two records for testing: "example.tld" and "google.com". You can test it: 
 ```sh
 whois -h localhost example.tld
 ```
@@ -90,7 +90,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for the whoisd must be defined in the mapping file, the example of the mapping file is described below:
+All required fields for whoisd must be defined in mapping file, the mapping file is described below:
 
 ```json
 {
@@ -113,11 +113,11 @@ All required fields for the whoisd must be defined in the mapping file, the exam
 }
 ```
 
-- "Fields" - the list of a fields from "01" to last number "nn" in ascending order
-- "key" - the prompt for the field (preinstalled config file has keys according to ICANN requirements)
-- "value" - if the field has prearranged value (not use any field from the database)
-- "name" - the field name in the database, if the field is not prearranged ("value" is not defined)
-- "related" - the field name in the database through which the request for 
+- "Fields" - a list of fields from "01" to last number "nn" in ascending order
+- "key" - the label for the field (preinstalled config file has keys according to ICANN requirements)
+- "value" - use it if the field has prearranged value (not use any field from the database)
+- "name" - the name of the field in the database, if the field is not prearranged ("value" is not defined)
+- "related" - the name of the field in the database through which the request for 
 
 ```json
 {
@@ -157,14 +157,14 @@ All required fields for the whoisd must be defined in the mapping file, the exam
 }
 ```
 
-- "multiple" - if this option is set to 'true', then for each value will be repeated prompt in the whois output like that:
+- "multiple" - if this option is set to 'true', then for each value will be repeated label in whois output like that:
 ```
 Name Server: ns1.example.com
 Name Server: ns2.example.com
 Name Server: ns3.example.com
 ```
-- "relatedBy" - field name in the database through which the related request for 
-- "relatedTo" - table/type name in the database through which made relation
+- "relatedBy" - the name of the field in the database through which the related request for 
+- "relatedTo" - the name of the table/type in the database through which made a relation
 
 ```json
 {
@@ -181,7 +181,7 @@ Name Server: ns3.example.com
 }
 ```
 
-- "hide" - if this option is set to 'true', the value of the field will not shown in the whois output
+- "hide" - if this option is set to 'true', the value of the field will not shown in whois output
 
 ```json
 {
@@ -223,8 +223,8 @@ Name Server: ns3.example.com
 }
 ```
 
-- "format": "{string}.{string}{string}" - indicate that the fields ["phone.countryCode", "phone.areaCode", "phone.subscriberNumber"] need special formatting by described format (not simple joined by default)
-- {string} - represent one string field in the format option
+- "format": "{string}.{string}{string}" - indicate that the fields ["phone.countryCode", "phone.areaCode", "phone.subscriberNumber"] need special formatting with described format (they are not simple joined)
+- {string} - represent one string field in format option
 
 ```json
 {
@@ -237,14 +237,14 @@ Name Server: ns3.example.com
 }
 ```
 
-- example of the formating where used {date} and name field has not present, the result is {date} will be replaced by current date in RFC3339 format
+- is the example of the formating where used {date}, because the name of the field has not present, the result is {date} will be replaced by CURRENT date in RFC3339 format
 
 
 ### TODO
 
 - in memory storage
 - Rest API
-- update strorage records by Rest API
+- update storage records by Rest API
 
 
 Copyright (c) 2014 Igor Dolzhikov
