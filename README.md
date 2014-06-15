@@ -69,7 +69,7 @@ Default configuration file placed in /etc/whoisd/whoisd.conf. Of course possible
   "workers": 1000,
   "connections": 1000,
   "storage": {
-    "storageType": "Elasticsearch",
+    "storageType": "Dummy",
     "host": "localhost",
     "port": 9200,
     "indexBase": "whois",
@@ -229,11 +229,13 @@ Name Server: ns3.example.com
 
 - example of the formating where used {date} and name field has not present, the result is {date} will be replaced by current date in RFC3339 format
 
-## TODO
 
-- in memory storage(database)
+### TODO
+
+- in memory storage (database)
 - Rest API
 - update strorage records by Rest API
+
 
 Copyright (c) 2014 Igor Dolzhikov
 
