@@ -67,39 +67,17 @@ func New() *ConfigRecord {
 // Loads the configurtion from the config file or from th command line
 func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	var path string
-
+	var err error
 	mRecord := new(mapper.MapperRecord)
-	mStat, err := os.Stat(config.mapperPath)
-	if !os.IsNotExist(err) {
-		mFile, err := os.Open(config.mapperPath)
-		if err != nil {
-			return nil, err
-		}
-		defer mFile.Close()
-		mData := make([]byte, mStat.Size())
-		if _, err := mFile.Read(mData); err != nil {
-			return nil, err
-		}
-		if err := json.Unmarshal(mData, &mRecord); err != nil {
-			return nil, err
-		}
+
+	if err = config.LoadConfigFile(config.configPath); err != nil {
+		return nil, err
 	}
-	stat, err := os.Stat(config.configPath)
-	if os.IsNotExist(err) {
-		return mRecord, nil
+	if mRecord, err = LoadMapperFile(config.mapperPath); err != nil {
+		return nil, err
 	}
-	file, err := os.Open(config.configPath)
-	if err != nil {
-		return mRecord, err
-	}
-	defer file.Close()
-	data := make([]byte, stat.Size())
-	if _, err := file.Read(data); err != nil {
-		return mRecord, err
-	}
-	if err := json.Unmarshal(data, &config); err != nil {
-		return mRecord, err
-	}
+
+	// overwrite config from file by cmd flags
 	flags := flag.NewFlagSet("whoisd", flag.ContinueOnError)
 	// Begin ignored flags
 	flags.StringVar(&path, "config", "", "")
@@ -117,4 +95,46 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	flags.Parse(os.Args[1:])
 
 	return mRecord, nil
+}
+
+func (config *ConfigRecord) LoadConfigFile(path string) error {
+	stat, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	data := make([]byte, stat.Size())
+	if _, err := file.Read(data); err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &config); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func LoadMapperFile(path string) (*mapper.MapperRecord, error) {
+	record := new(mapper.MapperRecord)
+	stat, err := os.Stat(path)
+	if !os.IsNotExist(err) {
+		mFile, err := os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+		defer mFile.Close()
+		data := make([]byte, stat.Size())
+		if _, err := mFile.Read(data); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(data, &record); err != nil {
+			return nil, err
+		}
+	}
+
+	return record, nil
 }
