@@ -8,7 +8,7 @@ import (
 	"github.com/takama/whoisd/mapper"
 )
 
-// The default values: path of the configuration file, host, port
+// Default values: path to config file, host, port, etc
 const (
 	defaultConfigPath  = "/etc/whoisd/whoisd.conf"
 	defaultMapperPath  = "mapper.json"
@@ -44,7 +44,7 @@ type StorageConfig struct {
 	TypeTable   string
 }
 
-// returns the configuration initialized with default values
+// returns the config initialized with default values
 func New() *ConfigRecord {
 	config := new(ConfigRecord)
 	flag.BoolVar(&config.ShowVersion, "version", false, "show version")
@@ -64,7 +64,7 @@ func New() *ConfigRecord {
 	return config
 }
 
-// Loads the configurtion from the config file or from th command line
+// Loads settings from config file or from sh command line
 func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	var path string
 	var err error
@@ -97,6 +97,7 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	return mRecord, nil
 }
 
+// loads congig file into config record
 func (config *ConfigRecord) LoadConfigFile(path string) error {
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
@@ -118,6 +119,7 @@ func (config *ConfigRecord) LoadConfigFile(path string) error {
 	return nil
 }
 
+// loads mapper records and returns it
 func LoadMapperFile(path string) (*mapper.MapperRecord, error) {
 	record := new(mapper.MapperRecord)
 	stat, err := os.Stat(path)

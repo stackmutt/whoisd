@@ -14,7 +14,7 @@ type ElasticsearchRecord struct {
 	Type  string
 }
 
-// Search the whois data in the storage
+// Search whois data in the storage
 func (elastic *ElasticsearchRecord) Search(name string, query string) (map[string][]string, error) {
 	data := make(map[string][]string)
 	result, err := elastic.SearchRaw(elastic.Type, name, query)
@@ -28,7 +28,7 @@ func (elastic *ElasticsearchRecord) Search(name string, query string) (map[strin
 	return data, nil
 }
 
-// Search the whois data in the storage from related type or table
+// Search whois data in the storage from related type or table
 func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
 	data := make(map[string][]string)
 	result, err := elastic.SearchRaw(typeTable, name, query)
@@ -42,7 +42,7 @@ func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string,
 	return data, nil
 }
 
-// Search multiple records from the whois data in the storage
+// Search multiple records of whois data in the storage
 func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
 	data := make(map[string][]string)
 	result, err := elastic.SearchRaw(typeTable, name, query)
@@ -98,11 +98,11 @@ func (elastic *ElasticsearchRecord) SearchRaw(typeTable string, name string, que
 	return all, nil
 }
 
-// Transformation the data to requested format
+// Transformation data to requested format
 func transformData(record map[string]interface{}) map[string][]string {
 	element := make(map[string][]string)
 
-	// Check the data on simple and array fields
+	// Check data for simple and array fields
 	// Convert all data to []string
 	for index, value := range record["_source"].(map[string]interface{}) {
 

@@ -17,7 +17,7 @@ type ClientRecord struct {
 	Query []byte
 }
 
-// Sends the client data into the channel
+// Sends a client data into the channel
 func (client *ClientRecord) HandleClient(channel chan ClientRecord) {
 	buffer := make([]byte, queryBufferSize)
 	numBytes, err := client.Conn.Read(buffer)
@@ -28,7 +28,7 @@ func (client *ClientRecord) HandleClient(channel chan ClientRecord) {
 	channel <- *client
 }
 
-// Asynchronous the client handling
+// Asynchronous a client handling
 func ProcessClient(channel chan ClientRecord, repository *storage.StorageRecord) {
 	for {
 		message := <-channel

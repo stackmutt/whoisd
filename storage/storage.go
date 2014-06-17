@@ -62,7 +62,7 @@ func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
 	}
 }
 
-// Search and sort the data from the storage
+// Search and sort a data from the storage
 func (storage *StorageRecord) Search(query string) (answer string, ok bool) {
 	ok = false
 	answer = "not found\n"
@@ -197,6 +197,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 	return mapp, nil
 }
 
+// prepares join and multiple actions in the answer
 func prepareAnswer(mapp *mapper.MapperRecord, keys []string) (answer string) {
 	for _, index := range keys {
 		key := mapp.Fields[index].Key
@@ -222,10 +223,14 @@ func prepareAnswer(mapp *mapper.MapperRecord, keys []string) (answer string) {
 	return answer
 }
 
+// loads all defined tags from preassigned data before join
 func customJoin(format string, value []string) string {
+	// template of date to parse
+	var templateDateFormat = "2006-01-02 15:04:05"
+
 	for _, item := range value {
 		if strings.Contains(format, "{date}") == true {
-			buildTime, err := time.Parse("2006-01-02 15:04:05", item)
+			buildTime, err := time.Parse(templateDateFormat, item)
 			if err != nil && len(strings.TrimSpace(item)) == 0 {
 				buildTime = time.Now()
 			}
