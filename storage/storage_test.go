@@ -1,31 +1,130 @@
 package storage
 
 import (
+	"flag"
 	"testing"
+
+	"github.com/takama/whoisd/config"
+	"github.com/takama/whoisd/mapper"
 )
 
-func TestCustomJoin(t *testing.T) {
+func TestStorage(t *testing.T) {
 
-	type testData struct {
-		format   string
-		value    []string
-		expected string
+	conf := config.New()
+	flag.Parse()
+	mapp := new(mapper.MapperRecord)
+	storage := New(conf, mapp)
+	answer, ok := storage.Search("")
+	if ok != false {
+		t.Error("Expected ok is false, got", ok)
 	}
-
-	var tests = []testData{
-		{"{string}.{string}{string}", []string{"+31", "1025", "1112"}, "+31.10251112"},
-		{"{string}.{string}{string}", []string{"", "1025", "1112"}, "10251112"},
-		{"{date}", []string{"2014-06-01 12:20:16"}, "2014-06-01T12:20:16Z"},
-		{"Last update of WHOIS database: {date}",
-			[]string{"2014-06-01 12:20:16"},
-			"Last update of WHOIS database: 2014-06-01T12:20:16Z",
+	if answer != "not found\n" {
+		t.Error("Expected answer is not found, got", answer)
+	}
+	answer, ok = storage.Search("aaa")
+	if ok != false {
+		t.Error("Expected ok is false, got", ok)
+	}
+	if answer != "not found\n" {
+		t.Error("Expected answer is not found, got", answer)
+	}
+	mapp.Fields = make(map[string]mapper.MapperField)
+	mapp.Fields["01"] = mapper.MapperField{
+		Key:     "Domain Name: ",
+		Name:    []string{"name"},
+		Related: "name",
+	}
+	mapp.Fields["03"] = mapper.MapperField{
+		Key:   "Registrar WHOIS Server: ",
+		Value: []string{"whois.markmonitor.com"},
+	}
+	mapp.Fields["05"] = mapper.MapperField{
+		Key:     "Updated Date: ",
+		Name:    []string{"updatedDate"},
+		Format:  "{date}",
+		Related: "name",
+	}
+	mapp.Fields["12"] = mapper.MapperField{
+		Key:      "Domain Status: ",
+		Name:     []string{"domainStatus"},
+		Multiple: true,
+		Related:  "name",
+	}
+	mapp.Fields["13"] = mapper.MapperField{
+		Key:       "Registry Registrant ID: ",
+		Name:      []string{"handle"},
+		Hide:      true,
+		Related:   "ownerHandle",
+		RelatedBy: "handle",
+		RelatedTo: "customer",
+	}
+	mapp.Fields["21"] = mapper.MapperField{
+		Key: "Registrant Phone: ",
+		Name: []string{
+			"phone.countryCode",
+			"phone.areaCode",
+			"phone.subscriberNumber",
 		},
+		Format:    "{string}.{string}{string}",
+		Related:   "ownerHandle",
+		RelatedBy: "handle",
+		RelatedTo: "customer",
 	}
-
-	for _, data := range tests {
-		result := customJoin(data.format, data.value)
-		if result != data.expected {
-			t.Error("Expected ", data.expected, ", got", result)
-		}
+	mapp.Fields["52"] = mapper.MapperField{
+		Key:       "Name Server: ",
+		Name:      []string{"name"},
+		Multiple:  true,
+		Related:   "nsgroupId",
+		RelatedBy: "nsgroupId",
+		RelatedTo: "nameserver",
+	}
+	mapp.Fields["55"] = mapper.MapperField{
+		Key:       "",
+		Value:     []string{"1"},
+		Name:      []string{"updatedDate"},
+		Format:    ">>> Last update of WHOIS database: {date} <<<",
+		Related:   "whois",
+		RelatedBy: "id",
+		RelatedTo: "whois",
+	}
+	storage = New(conf, mapp)
+	answer, ok = storage.Search("google.com")
+	if ok != true {
+		t.Error("Expected ok is true, got", ok)
+	}
+	expected := `Domain Name: google.com
+Registrar WHOIS Server: whois.markmonitor.com
+Updated Date: 2014-05-19T04:00:17Z
+Domain Status: clientUpdateProhibited
+Domain Status: clientTransferProhibited
+Domain Status: clientDeleteProhibited
+Registry Registrant ID: 
+Registrant Phone: +1.6502530000
+Name Server: ns1.google.com
+Name Server: ns2.google.com
+Name Server: ns3.google.com
+Name Server: ns4.google.com
+>>> Last update of WHOIS database: 2014-06-01T11:00:07Z <<<
+`
+	if answer != expected {
+		t.Error("Expected answer", expected, ", got", answer)
+	}
+	conf.Storage.StorageType = "mysql"
+	storage = New(conf, mapp)
+	answer, ok = storage.Search("mmm")
+	if ok != false {
+		t.Error("Expected ok is false, got", ok)
+	}
+	if answer != "not found\n" {
+		t.Error("Expected answer is not found, got", answer)
+	}
+	conf.Storage.StorageType = "elasticsearch"
+	storage = New(conf, mapp)
+	answer, ok = storage.Search("eee")
+	if ok != false {
+		t.Error("Expected ok is false, got", ok)
+	}
+	if answer != "not found\n" {
+		t.Error("Expected answer is not found, got", answer)
 	}
 }

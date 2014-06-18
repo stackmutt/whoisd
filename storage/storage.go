@@ -73,7 +73,7 @@ func (storage *StorageRecord) Search(query string) (answer string, ok bool) {
 		if err != nil {
 			log.Println("Query:", query, err.Error())
 		} else {
-			if mapp == nil {
+			if mapp == nil || len(mapp.Fields) == 0 {
 				return answer, ok
 			}
 			ok = true
