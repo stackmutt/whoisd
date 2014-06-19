@@ -21,17 +21,25 @@ func TestClientHandling(t *testing.T) {
 	repository := storage.New(conf, mapp)
 	go ProcessClient(channel, repository)
 
+	// make pipe connections for testing
+	// connIn will ready to write into by function ProcessClient
 	connIn, connOut := net.Pipe()
 	newClient := ClientRecord{Conn: connIn}
+
+	// prepare query for ProcessClient
 	newClient.Query = []byte("google.com")
+
+	// send it into channel
 	channel <- newClient
+
+	// just read answer from channel pipe
 	buffer := make([]byte, 256)
 	numBytes, err := connOut.Read(buffer)
 	if err != nil {
 		t.Error("Network communication error", err.Error())
 	}
 	if numBytes == 0 || len(buffer) == 0 {
-		t.Error("Expexted some data resd, got", string(buffer))
+		t.Error("Expexted some data read, got", string(buffer))
 	}
 	partAnswer := "Updated Date: 2014-05-19T04:00:17Z"
 	if !strings.Contains(string(buffer), partAnswer) {
