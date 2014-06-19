@@ -107,7 +107,7 @@ Name Server: ns4.google.com
 >>> Last update of WHOIS database: 2014-06-01T11:00:07Z <<<
 `
 	if answer != expected {
-		t.Error("Expected answer", expected, ", got", answer)
+		t.Error("Expected answer:\n", expected, "\n, got:\n", answer)
 	}
 	conf.Storage.StorageType = "mysql"
 	storage = New(conf, mapp)

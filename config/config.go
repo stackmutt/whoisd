@@ -24,8 +24,8 @@ const (
 )
 
 type ConfigRecord struct {
-	configPath string
-	mapperPath string
+	ConfigPath string
+	MapperPath string
 
 	ShowVersion bool
 
@@ -49,8 +49,8 @@ func New() *ConfigRecord {
 	config := new(ConfigRecord)
 	flag.BoolVar(&config.ShowVersion, "version", false, "show version")
 	flag.BoolVar(&config.ShowVersion, "v", false, "show version")
-	flag.StringVar(&config.configPath, "config", defaultConfigPath, "path to configuration file")
-	flag.StringVar(&config.mapperPath, "mapper", defaultMapperPath, "path to mapper file")
+	flag.StringVar(&config.ConfigPath, "config", defaultConfigPath, "path to configuration file")
+	flag.StringVar(&config.MapperPath, "mapper", defaultMapperPath, "path to mapper file")
 	flag.StringVar(&config.Host, "host", defaultHost, "host name or IP address")
 	flag.IntVar(&config.Port, "port", defaultPort, "port number")
 	flag.IntVar(&config.Workers, "work", defaultWorkers, "number of active workers")
@@ -70,10 +70,10 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	var err error
 	mRecord := new(mapper.MapperRecord)
 
-	if err = config.LoadConfigFile(config.configPath); err != nil {
+	if err = config.LoadConfigFile(config.ConfigPath); err != nil {
 		return nil, err
 	}
-	if mRecord, err = LoadMapperFile(config.mapperPath); err != nil {
+	if mRecord, err = LoadMapperFile(config.MapperPath); err != nil {
 		return nil, err
 	}
 
