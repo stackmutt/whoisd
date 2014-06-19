@@ -24,6 +24,8 @@ func TestClientHandling(t *testing.T) {
 	// make pipe connections for testing
 	// connIn will ready to write into by function ProcessClient
 	connIn, connOut := net.Pipe()
+	defer connIn.Close()
+	defer connOut.Close()
 	newClient := ClientRecord{Conn: connIn}
 
 	// prepare query for ProcessClient
