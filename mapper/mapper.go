@@ -15,3 +15,7 @@ type MapperField struct {
 	RelatedBy string   // the name of the field in the database through which the related request for
 	RelatedTo string   // the name of the table/type in the database through which made a relation
 }
+
+func (mapp *MapperRecord) Count() int {
+	return len(mapp.Fields)
+}

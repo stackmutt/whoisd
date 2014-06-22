@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/takama/whoisd/client"
@@ -33,7 +34,7 @@ func (server *ServerRecord) Run() {
 	address := fmt.Sprintf("%s:%d", server.Config.Host, server.Config.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	channel := make(chan client.ClientRecord, server.Config.Connections)
 	repository := storage.New(server.Config, server.Mapper)

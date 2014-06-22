@@ -7,7 +7,7 @@ import (
 func TestMapper(t *testing.T) {
 
 	mapp := MapperRecord{}
-	if len(mapp.Fields) != 0 {
-		t.Error("Expected empty mapper, got", len(mapp.Fields))
+	if mapp.Count() != 0 {
+		t.Error("Expected empty mapper, got", mapp.Count())
 	}
 }

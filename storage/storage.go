@@ -73,13 +73,13 @@ func (storage *StorageRecord) Search(query string) (answer string, ok bool) {
 		if err != nil {
 			log.Println("Query:", query, err.Error())
 		} else {
-			if mapp == nil || len(mapp.Fields) == 0 {
+			if mapp == nil || mapp.Count() == 0 {
 				return answer, ok
 			}
 			ok = true
 
 			// get keys of a map and sort their
-			keys := make([]string, 0, len(mapp.Fields))
+			keys := make([]string, 0, mapp.Count())
 			for key := range mapp.Fields {
 				keys = append(keys, key)
 			}

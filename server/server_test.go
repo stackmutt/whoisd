@@ -6,7 +6,7 @@ import (
 	"github.com/takama/whoisd/config"
 )
 
-func TestFerver(t *testing.T) {
+func TestServer(t *testing.T) {
 	conf := config.New()
 	conf.ConfigPath = "../test/testconfig.conf"
 	conf.MapperPath = "../test/testmapper.json"
