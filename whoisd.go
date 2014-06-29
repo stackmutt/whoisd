@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/takama/whoisd/config"
-	"github.com/takama/whoisd/server"
+	"github.com/takama/whoisd/service"
 )
 
 // Init "Usage" helper
@@ -19,22 +19,24 @@ func init() {
 }
 
 func main() {
-	conf := config.New()
+	serviceName := "Whois Daemon"
+	serviceInstance := service.New(serviceName)
 	flag.Parse()
-	if conf.ShowVersion {
-		buildTime, err := time.Parse(time.RFC3339, server.Date)
+	if serviceInstance.Config.ShowVersion {
+		buildTime, err := time.Parse(time.RFC3339, service.Date)
 		if err != nil {
 			buildTime = time.Now()
 		}
-		fmt.Println("Whois Daemon", server.Version, buildTime.Format(time.RFC3339))
+		fmt.Println(serviceName, service.Version, buildTime.Format(time.RFC3339))
 		os.Exit(0)
 	}
-	mapp, err := conf.Load()
+	doRun, err := serviceInstance.Check()
 	if err != nil {
-		log.Fatal("Error loading configuration:", err)
+		log.Fatal("Error: ", err)
 	}
-	var daemon = server.New(conf, mapp)
-	fmt.Printf("Whois Daemon started on %s:%d\n", conf.Host, conf.Port)
-	fmt.Printf("Used storage %s on %s:%d\n", conf.Storage.StorageType, conf.Storage.Host, conf.Storage.Port)
-	daemon.Run()
+	if doRun {
+		if err := serviceInstance.Run(); err != nil {
+			log.Fatal("Error: ", err)
+		}
+	}
 }
