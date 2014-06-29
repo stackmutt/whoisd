@@ -6,7 +6,10 @@ import (
 
 func TestService(t *testing.T) {
 	serviceName := "Whois Daemon"
-	srv := New(serviceName)
+	srv, err := New(serviceName)
+	if err != nil {
+		t.Error("Expected service create without error, got", err.Error())
+	}
 	if srv.Name != serviceName {
 		t.Error("Expected service name must be ", serviceName, ", got", srv.Name)
 	}
@@ -17,7 +20,7 @@ func TestService(t *testing.T) {
 	srv.Config.MapperPath = "../test/testmapper.json"
 	doRun, err := srv.Manage()
 	if err != nil {
-		t.Error("Expected service check without error, got", err.Error())
+		t.Error("Expected service manage without error, got", err.Error())
 	}
 	if doRun != true {
 		t.Error("Expected run status must be true, got", err.Error())

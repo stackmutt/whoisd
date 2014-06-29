@@ -52,6 +52,8 @@ func (srv *ServiceRecord) Manage() (doRun bool, err error) {
 			if err = srv.Remove(); err != nil {
 				return doRun, err
 			}
+		case "-test.v=true":
+			log.Println("Test command recognized")
 		default:
 			doRun = false
 			return doRun, errors.New("Unrecognized command: " + command)
