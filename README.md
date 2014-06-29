@@ -99,7 +99,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for whoisd must be defined in mapping file. Default config file located in app directory ./mapping.json. The context of the mapping file is described below:
+All required fields for whoisd must be defined in mapping file. Default mapping file "mapping.json" located in app directory. The context of the mapping file is described below:
 
 ```json
 {
