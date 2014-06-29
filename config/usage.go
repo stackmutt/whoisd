@@ -16,8 +16,8 @@ Commands:
 Options:
   -h --help         Show this screen
   -v --version      Show version
-  -config=<path>    Path to configuration file
-  -mapping=<path>   Path to mapping file
+  -config=<path>    Path to config file (installed in /etc/whoisd/whoisd.conf)
+  -mapping=<path>   Path to mapping file (installed in /etc/whoisd/conf.d/mapping.json)
   -host=<host/IP>   Host name or IP address
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)

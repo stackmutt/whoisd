@@ -12,7 +12,7 @@ import (
 // Default values: path to config file, host, port, etc
 const (
 	defaultConfigPath  = "/etc/whoisd/whoisd.conf"
-	defaultMappingPath = "mapping.json"
+	defaultMappingPath = "/etc/whoisd/conf.d/mapping.json"
 	defaultHost        = "localhost"
 	defaultPort        = 43
 	defaultWorkers     = 1000
@@ -125,7 +125,7 @@ func LoadMappingFile(path string) (*mapper.MapperRecord, error) {
 	record := new(mapper.MapperRecord)
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return nil, errors.New("Mapping file not found, please load it through -mapping option or from current directory")
+		return nil, errors.New("Mapping file not found, please load it through -mapping option or install command")
 	}
 	mFile, err := os.Open(path)
 	if err != nil {

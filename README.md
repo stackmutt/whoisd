@@ -52,8 +52,8 @@ Commands:
 Options:
   -h --help         Show this screen
   -v --version      Show version
-  -config=<path>    Path to configuration file
-  -mapping=<path>   Path to mapping file
+  -config=<path>    Path to config file (installed in /etc/whoisd/whoisd.conf)
+  -mapping=<path>   Path to mapping file (installed in /etc/whoisd/conf.d/mapping.json)
   -host=<host/IP>   Host name or IP address
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)
@@ -69,7 +69,7 @@ _NOTE_: install and remove service commands not released yet
 
 ### Config
 
-Default config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through parameters of command line. If config file is absent, used default configuration below: 
+Installed config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through -config option. If config file is absent, used default configuration below: 
 
 ```json
 {
@@ -99,7 +99,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for whoisd must be defined in mapping file. Default mapping file "mapping.json" located in app directory. The context of the mapping file is described below:
+All required fields for whoisd must be defined in mapping file. Installed mapping file located in /etc/whoisd/conf.d/mapping.json. It possible to load mapping file through -mapping option. The context of the mapping file is described below:
 
 ```json
 {
