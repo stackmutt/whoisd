@@ -41,12 +41,12 @@ whoisd - Whois Daemon
 
 Usage:
   whoisd install | remove
-  whoisd -option [ -option ... ]
+  whoisd [ -option | -option ... ]
   whoisd -h | --help
   whoisd -v | --version
 
 Commands:
-  install           Install as service (only for Linux and Mac Os X)
+  install           Install as service (is only valid for Linux and Mac Os X)
   remove            Remove service
 
 Options:
@@ -99,7 +99,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for whoisd must be defined in mapping file, the mapping file is described below:
+All required fields for whoisd must be defined in mapping file. Default config file located in app directory ./mapping.json. The context of the mapping file is described below:
 
 ```json
 {
