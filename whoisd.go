@@ -20,7 +20,10 @@ func init() {
 
 func main() {
 	serviceName := "Whois Daemon"
-	serviceInstance := service.New(serviceName)
+	serviceInstance, err := service.New(serviceName)
+	if err != nil {
+		log.Fatal("Error: ", err)
+	}
 	flag.Parse()
 	if serviceInstance.Config.ShowVersion {
 		buildTime, err := time.Parse(time.RFC3339, service.Date)
@@ -30,7 +33,7 @@ func main() {
 		fmt.Println(serviceName, service.Version, buildTime.Format(time.RFC3339))
 		os.Exit(0)
 	}
-	doRun, err := serviceInstance.Check()
+	doRun, err := serviceInstance.Manage()
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}

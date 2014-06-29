@@ -1,13 +1,16 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"path/filepath"
 
 	"github.com/takama/whoisd/client"
 	"github.com/takama/whoisd/config"
+	"github.com/takama/whoisd/daemon"
 	"github.com/takama/whoisd/storage"
 )
 
@@ -19,28 +22,54 @@ const (
 type ServiceRecord struct {
 	Name   string
 	Config *config.ConfigRecord
+	daemon.Daemon
 }
 
-func New(name string) *ServiceRecord {
+// Create a new service record
+func New(name string) (*ServiceRecord, error) {
+	daemonInstance, err := daemon.New(name)
+	if err != nil {
+		return nil, err
+	}
 
-	return &ServiceRecord{name, config.New()}
+	return &ServiceRecord{name, config.New(), daemonInstance}, nil
 }
 
-func (srv *ServiceRecord) Check() (doRun bool, err error) {
+// Manage a service (Install or Remove)
+func (srv *ServiceRecord) Manage() (doRun bool, err error) {
 	doRun = true
 	err = nil
+	if len(os.Args) > 1 {
+		command := os.Args[1]
+		switch command {
+		case "install":
+			doRun = false
+			if err = srv.Install(); err != nil {
+				return doRun, err
+			}
+		case "remove":
+			doRun = false
+			if err = srv.Remove(); err != nil {
+				return doRun, err
+			}
+		default:
+			doRun = false
+			return doRun, errors.New("Unrecognized command: " + command)
+		}
+	}
 
 	return doRun, err
 }
 
+// Run the service
 func (srv *ServiceRecord) Run() error {
 	mapp, err := srv.Config.Load()
 	if err != nil {
 		return err
 	}
 	serviceHostPort := fmt.Sprintf("%s:%d", srv.Config.Host, srv.Config.Port)
-	fmt.Printf("%s started on %s\n", srv.Name, serviceHostPort)
-	fmt.Printf("Used storage %s on %s:%d\n",
+	log.Printf("%s started on %s\n", srv.Name, serviceHostPort)
+	log.Printf("Used storage %s on %s:%d\n",
 		srv.Config.Storage.StorageType,
 		srv.Config.Storage.Host,
 		srv.Config.Storage.Port,
@@ -63,6 +92,7 @@ func (srv *ServiceRecord) Run() error {
 		go newClient.HandleClient(channel)
 	}
 
+	// never happen, but need to complete code
 	return nil
 }
 

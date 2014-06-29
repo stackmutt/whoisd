@@ -15,7 +15,7 @@ func TestService(t *testing.T) {
 	}
 	srv.Config.ConfigPath = "../test/testconfig.conf"
 	srv.Config.MapperPath = "../test/testmapper.json"
-	doRun, err := srv.Check()
+	doRun, err := srv.Manage()
 	if err != nil {
 		t.Error("Expected service check without error, got", err.Error())
 	}

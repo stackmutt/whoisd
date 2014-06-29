@@ -4,9 +4,14 @@ var usage = `
 whoisd - Whois Daemon
 
 Usage:
-  whoisd -option
+  whoisd install | remove
+  whoisd -option [ -option ... ]
   whoisd -h | --help
   whoisd -v | --version
+
+Commands:
+  install           Install as service (only for Linux and Mac Os X)
+  remove            Remove service
 
 Options:
   -h --help         Show this screen
