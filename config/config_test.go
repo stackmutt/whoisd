@@ -8,7 +8,7 @@ func TestConfig(t *testing.T) {
 
 	conf := New()
 	conf.ConfigPath = ""
-	conf.MapperPath = ""
+	conf.MappingPath = ""
 	mapp, err := conf.Load()
 	if err == nil {
 		t.Error("Expected error of loading mapping file, got nothing")
@@ -20,10 +20,10 @@ func TestConfig(t *testing.T) {
 		t.Error("Expected 100 workers, got", conf.Workers)
 	}
 	if mapp != nil {
-		t.Error("Expected nil mapper, got not nil mapper")
+		t.Error("Expected nil mapper record, got not nil mapper record")
 	}
 	conf.ConfigPath = "../test/testconfig.conf"
-	conf.MapperPath = "../test/testmapper.json"
+	conf.MappingPath = "../test/testmapping.json"
 	mapp, err = conf.Load()
 	if err != nil {
 		t.Error("Expected config loading without error, got", err.Error())

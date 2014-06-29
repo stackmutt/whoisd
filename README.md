@@ -40,15 +40,20 @@ This will bring up whoisd listening on port 43 for client communication.
 whoisd - Whois Daemon
 
 Usage:
-  whoisd -option
+  whoisd install | remove
+  whoisd -option [ -option ... ]
   whoisd -h | --help
   whoisd -v | --version
+
+Commands:
+  install           Install as service (only for Linux and Mac Os X)
+  remove            Remove service
 
 Options:
   -h --help         Show this screen
   -v --version      Show version
   -config=<path>    Path to configuration file
-  -mapper=<path>    Path to mapper file
+  -mapping=<path>   Path to mapping file
   -host=<host/IP>   Host name or IP address
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)
@@ -59,6 +64,8 @@ Options:
   -base=<name>      Storage index or database name
   -table=<name>     Storage type or table name
 ```
+_NOTE_: install and remove service commands not released yet
+
 
 ### Config
 

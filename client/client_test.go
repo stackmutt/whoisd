@@ -12,7 +12,7 @@ import (
 func TestClientHandling(t *testing.T) {
 	conf := config.New()
 	conf.ConfigPath = "../test/testconfig.conf"
-	conf.MapperPath = "../test/testmapper.json"
+	conf.MappingPath = "../test/testmapping.json"
 	mapp, err := conf.Load()
 	if err != nil {
 		t.Error("Expected config loading without error, got", err.Error())

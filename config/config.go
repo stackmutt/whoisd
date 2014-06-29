@@ -12,7 +12,7 @@ import (
 // Default values: path to config file, host, port, etc
 const (
 	defaultConfigPath  = "/etc/whoisd/whoisd.conf"
-	defaultMapperPath  = "mapper.json"
+	defaultMappingPath = "mapping.json"
 	defaultHost        = "localhost"
 	defaultPort        = 43
 	defaultWorkers     = 1000
@@ -25,8 +25,8 @@ const (
 )
 
 type ConfigRecord struct {
-	ConfigPath string
-	MapperPath string
+	ConfigPath  string
+	MappingPath string
 
 	ShowVersion bool
 
@@ -51,7 +51,7 @@ func New() *ConfigRecord {
 	flag.BoolVar(&config.ShowVersion, "version", false, "show version")
 	flag.BoolVar(&config.ShowVersion, "v", false, "show version")
 	flag.StringVar(&config.ConfigPath, "config", defaultConfigPath, "path to configuration file")
-	flag.StringVar(&config.MapperPath, "mapper", defaultMapperPath, "path to mapper file")
+	flag.StringVar(&config.MappingPath, "mapping", defaultMappingPath, "path to mapping file")
 	flag.StringVar(&config.Host, "host", defaultHost, "host name or IP address")
 	flag.IntVar(&config.Port, "port", defaultPort, "port number")
 	flag.IntVar(&config.Workers, "work", defaultWorkers, "number of active workers")
@@ -74,7 +74,7 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	if err = config.LoadConfigFile(config.ConfigPath); err != nil {
 		return nil, err
 	}
-	if mRecord, err = LoadMapperFile(config.MapperPath); err != nil {
+	if mRecord, err = LoadMappingFile(config.MappingPath); err != nil {
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	flags := flag.NewFlagSet("whoisd", flag.ContinueOnError)
 	// Begin ignored flags
 	flags.StringVar(&path, "config", "", "")
-	flags.StringVar(&path, "mapper", "", "")
+	flags.StringVar(&path, "mapping", "", "")
 	// End ignored flags
 	flags.StringVar(&config.Host, "host", config.Host, "")
 	flags.IntVar(&config.Port, "port", config.Port, "")
@@ -121,11 +121,11 @@ func (config *ConfigRecord) LoadConfigFile(path string) error {
 }
 
 // loads mapper records and returns it
-func LoadMapperFile(path string) (*mapper.MapperRecord, error) {
+func LoadMappingFile(path string) (*mapper.MapperRecord, error) {
 	record := new(mapper.MapperRecord)
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return nil, errors.New("Mapper file not found, please load it through -mapper option or from current directory")
+		return nil, errors.New("Mapping file not found, please load it through -mapping option or from current directory")
 	}
 	mFile, err := os.Open(path)
 	if err != nil {

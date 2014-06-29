@@ -17,7 +17,7 @@ func TestService(t *testing.T) {
 		t.Error("Expected server host is localhost, got", srv.Config.Host)
 	}
 	srv.Config.ConfigPath = "../test/testconfig.conf"
-	srv.Config.MapperPath = "../test/testmapper.json"
+	srv.Config.MappingPath = "../test/testmapping.json"
 	doRun, err := srv.Manage()
 	if err != nil {
 		t.Error("Expected service manage without error, got", err.Error())

@@ -17,7 +17,7 @@ Options:
   -h --help         Show this screen
   -v --version      Show version
   -config=<path>    Path to configuration file
-  -mapper=<path>    Path to mapper file
+  -mapping=<path>   Path to mapping file
   -host=<host/IP>   Host name or IP address
   -port=<port>      Port number
   -work=<number>    Number of active workers (default 1000)
