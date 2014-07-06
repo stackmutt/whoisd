@@ -38,7 +38,7 @@ func (linux *LinuxRecord) Stop() error {
 	return nil
 }
 
-func (linux *LinuxRecord) Sratus() error {
+func (linux *LinuxRecord) Sratus() (string, error) {
 	log.Println(linux.description, "has not benn used due to dummy mode")
 
 	return "", nil
