@@ -8,6 +8,7 @@ Usage:
   whoisd [ -option | -option ... ]
   whoisd -h | --help
   whoisd -v | --version
+  whoisd -t | --test
 
 Commands:
   install           Install as service (is only valid for Linux and Mac Os X)
@@ -16,6 +17,7 @@ Commands:
 Options:
   -h --help         Show this screen
   -v --version      Show version
+  -t --test         Test mode
   -config=<path>    Path to config file (installed in /etc/whoisd/whoisd.conf)
   -mapping=<path>   Path to mapping file (installed in /etc/whoisd/conf.d/mapping.json)
   -host=<host/IP>   Host name or IP address

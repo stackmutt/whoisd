@@ -29,6 +29,7 @@ type ConfigRecord struct {
 	MappingPath string
 
 	ShowVersion bool
+	TestMode    bool
 
 	Host        string
 	Port        int
@@ -50,6 +51,8 @@ func New() *ConfigRecord {
 	config := new(ConfigRecord)
 	flag.BoolVar(&config.ShowVersion, "version", false, "show version")
 	flag.BoolVar(&config.ShowVersion, "v", false, "show version")
+	flag.BoolVar(&config.TestMode, "t", false, "test mode")
+	flag.BoolVar(&config.TestMode, "test", false, "test mode")
 	flag.StringVar(&config.ConfigPath, "config", defaultConfigPath, "path to configuration file")
 	flag.StringVar(&config.MappingPath, "mapping", defaultMappingPath, "path to mapping file")
 	flag.StringVar(&config.Host, "host", defaultHost, "host name or IP address")
@@ -84,6 +87,8 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	flags.StringVar(&path, "config", "", "")
 	flags.StringVar(&path, "mapping", "", "")
 	// End ignored flags
+	flags.BoolVar(&config.TestMode, "t", config.TestMode, "")
+	flags.BoolVar(&config.TestMode, "test", config.TestMode, "")
 	flags.StringVar(&config.Host, "host", config.Host, "")
 	flags.IntVar(&config.Port, "port", config.Port, "")
 	flags.IntVar(&config.Workers, "work", config.Workers, "")

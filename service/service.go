@@ -64,6 +64,9 @@ func (srv *ServiceRecord) Run() error {
 	for i := 0; i < srv.Config.Workers; i++ {
 		go client.ProcessClient(channel, repository)
 	}
+	if srv.Config.TestMode == true {
+		return nil
+	}
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
