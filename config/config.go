@@ -30,6 +30,7 @@ type ConfigRecord struct {
 
 	ShowVersion bool
 	TestMode    bool
+	TestQuery   string
 
 	Host        string
 	Port        int

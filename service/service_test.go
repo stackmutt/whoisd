@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -18,8 +19,12 @@ func TestService(t *testing.T) {
 	}
 	srv.Config.ConfigPath = "../test/testconfig.conf"
 	srv.Config.MappingPath = "../test/testmapping.json"
-	err = srv.Run()
+	answer, err := srv.Run()
 	if err != nil {
-		t.Error("Expected service manage without error, got", err.Error())
+		t.Error("Expected service run without error, got", err.Error())
+	}
+	partAnswer := "Updated Date: 2014-05-19T04:00:17Z"
+	if !strings.Contains(string(answer), partAnswer) {
+		t.Error("Expexted that contains", partAnswer, ", got", string(answer))
 	}
 }

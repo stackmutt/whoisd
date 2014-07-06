@@ -33,7 +33,11 @@ func main() {
 		fmt.Println(serviceName, service.Version, buildTime.Format(time.RFC3339))
 		os.Exit(0)
 	}
-	if err := serviceInstance.Run(); err != nil {
-		log.Fatal("Error: ", err)
+	status, err := serviceInstance.Run()
+	if err != nil {
+		log.Fatal(status, " - Error: ", err)
 	}
+	// Wait for logger output
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println(status)
 }

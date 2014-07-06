@@ -8,6 +8,9 @@ import (
 type Daemon interface {
 	Install() error
 	Remove() error
+	Start() error
+	Stop() error
+	Status() (string, error)
 }
 
 func New(name, description string) (Daemon, error) {
