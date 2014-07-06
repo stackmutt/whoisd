@@ -40,7 +40,7 @@ This will bring up whoisd listening on port 43 for client communication.
 whoisd - Whois Daemon
 
 Usage:
-  whoisd install | remove
+  whoisd install | remove | start | stop | status
   whoisd [ -t | --test ] [ -option | -option ... ]
   whoisd -h | --help
   whoisd -v | --version
@@ -48,6 +48,9 @@ Usage:
 Commands:
   install           Install as service (is only valid for Linux and Mac Os X)
   remove            Remove service
+  start             Start service
+  stop              Stop service
+  status            Check service status
 
   -h --help         Show this screen
   -v --version      Show version
@@ -66,7 +69,7 @@ Options:
   -base=<name>      Storage index or database name
   -table=<name>     Storage type or table name
 ```
-_NOTE_: install and remove service commands not released yet
+_NOTE_: service commands released only for Mac OS X
 
 
 ### Config
