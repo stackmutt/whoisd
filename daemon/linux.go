@@ -5,22 +5,23 @@ import (
 )
 
 type LinuxRecord struct {
-	name string
+	name        string
+	description string
 }
 
-func newDaemon(name string) (*LinuxRecord, error) {
+func newDaemon(name, description string) (*LinuxRecord, error) {
 
-	return &LinuxRecord{name}, nil
+	return &LinuxRecord{name, description}, nil
 }
 
 func (linux *LinuxRecord) Install() error {
-	log.Println("Linux service has not been installed due to dummy mode")
+	log.Println(linux.description, "has not been installed due to dummy mode")
 
 	return nil
 }
 
 func (linux *LinuxRecord) Remove() error {
-	log.Println("Linux service has not been removed due to dummy mode")
+	log.Println(linux.description, "has not been removed due to dummy mode")
 
 	return nil
 }

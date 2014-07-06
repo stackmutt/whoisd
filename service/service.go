@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath"
 
 	"github.com/takama/whoisd/client"
 	"github.com/takama/whoisd/config"
@@ -25,8 +24,8 @@ type ServiceRecord struct {
 }
 
 // Create a new service record
-func New(name string) (*ServiceRecord, error) {
-	daemonInstance, err := daemon.New(name)
+func New(name, description string) (*ServiceRecord, error) {
+	daemonInstance, err := daemon.New(name, description)
 	if err != nil {
 		return nil, err
 	}
@@ -34,31 +33,17 @@ func New(name string) (*ServiceRecord, error) {
 	return &ServiceRecord{name, config.New(), daemonInstance}, nil
 }
 
-// Manage a service (Install or Remove)
-func (srv *ServiceRecord) Manage() (doRun bool, err error) {
-	doRun = true
-	err = nil
+// Run or manage the service
+func (srv *ServiceRecord) Run() error {
 	if len(os.Args) > 1 {
 		command := os.Args[1]
 		switch command {
 		case "install":
-			doRun = false
-			if err = srv.Install(); err != nil {
-				return doRun, err
-			}
+			return srv.Install()
 		case "remove":
-			doRun = false
-			if err = srv.Remove(); err != nil {
-				return doRun, err
-			}
+			return srv.Remove()
 		}
 	}
-
-	return doRun, err
-}
-
-// Run the service
-func (srv *ServiceRecord) Run() error {
 	mapp, err := srv.Config.Load()
 	if err != nil {
 		return err
@@ -90,8 +75,4 @@ func (srv *ServiceRecord) Run() error {
 
 	// never happen, but need to complete code
 	return nil
-}
-
-func executablePath() (string, error) {
-	return filepath.Abs(os.Args[0])
 }

@@ -19,8 +19,8 @@ func init() {
 }
 
 func main() {
-	serviceName := "Whois Daemon"
-	serviceInstance, err := service.New(serviceName)
+	serviceName, serviceDescription := "whoisd", "Whois Daemon"
+	serviceInstance, err := service.New(serviceName, serviceDescription)
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}
@@ -33,13 +33,7 @@ func main() {
 		fmt.Println(serviceName, service.Version, buildTime.Format(time.RFC3339))
 		os.Exit(0)
 	}
-	doRun, err := serviceInstance.Manage()
-	if err != nil {
+	if err := serviceInstance.Run(); err != nil {
 		log.Fatal("Error: ", err)
-	}
-	if doRun {
-		if err := serviceInstance.Run(); err != nil {
-			log.Fatal("Error: ", err)
-		}
 	}
 }
