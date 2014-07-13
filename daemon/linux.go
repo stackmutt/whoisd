@@ -23,8 +23,18 @@ func (linux *LinuxRecord) servicePath() string {
 	return "/etc/init.d/" + linux.name
 }
 
+// Check service is installed
+func (linux *LinuxRecord) checkInstalled() bool {
+
+	if _, err := os.Stat(linux.servicePath()); err == nil {
+		return true
+	}
+
+	return false
+}
+
 // Check service is running
-func (linux *LinuxRecord) checkStatus() (string, bool) {
+func (linux *LinuxRecord) checkRunning() (string, bool) {
 	output, err := exec.Command("service", linux.name, "status").Output()
 	if err == nil {
 		if matched, err := regexp.MatchString(linux.name, string(output)); err == nil && matched {
@@ -50,7 +60,7 @@ func (linux *LinuxRecord) Install() (string, error) {
 
 	srvPath := linux.servicePath()
 
-	if _, err := os.Stat(srvPath); err == nil {
+	if linux.checkInstalled() == true {
 		return installAction + failed, errors.New(linux.description + " already installed")
 	}
 
@@ -104,6 +114,10 @@ func (linux *LinuxRecord) Remove() (string, error) {
 		return removeAction + failed, errors.New(rootPrivileges)
 	}
 
+	if linux.checkInstalled() == false {
+		return removeAction + failed, errors.New(linux.description + " not installed")
+	}
+
 	if err := os.Remove(linux.servicePath()); err != nil {
 		return removeAction + failed, err
 	}
@@ -129,7 +143,11 @@ func (linux *LinuxRecord) Start() (string, error) {
 		return startAction + failed, errors.New(rootPrivileges)
 	}
 
-	if _, status := linux.checkStatus(); status == true {
+	if linux.checkInstalled() == false {
+		return startAction + failed, errors.New(linux.description + " not installed")
+	}
+
+	if _, status := linux.checkRunning(); status == true {
 		return startAction + failed, errors.New("service already running")
 	}
 
@@ -147,7 +165,11 @@ func (linux *LinuxRecord) Stop() (string, error) {
 		return stopAction + failed, errors.New(rootPrivileges)
 	}
 
-	if _, status := linux.checkStatus(); status == false {
+	if linux.checkInstalled() == false {
+		return stopAction + failed, errors.New(linux.description + " not installed")
+	}
+
+	if _, status := linux.checkRunning(); status == false {
 		return stopAction + failed, errors.New("service already stopped")
 	}
 
@@ -163,7 +185,12 @@ func (linux *LinuxRecord) Status() (string, error) {
 	if checkPrivileges() == false {
 		return "", errors.New(rootPrivileges)
 	}
-	statusAction, _ := linux.checkStatus()
+
+	if linux.checkInstalled() == false {
+		return "Status could not defined", errors.New(linux.description + " not installed")
+	}
+
+	statusAction, _ := linux.checkRunning()
 
 	return statusAction, nil
 }
