@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/takama/whoisd/config"
@@ -13,6 +13,7 @@ import (
 
 // Init "Usage" helper
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Usage = func() {
 		fmt.Println(config.Usage())
 	}
@@ -22,7 +23,8 @@ func main() {
 	serviceName, serviceDescription := "whoisd", "Whois Daemon"
 	serviceInstance, err := service.New(serviceName, serviceDescription)
 	if err != nil {
-		log.Fatal("Error: ", err)
+		fmt.Println("Error: ", err)
+		os.Exit(1)
 	}
 	flag.Parse()
 	if serviceInstance.Config.ShowVersion {
@@ -35,7 +37,8 @@ func main() {
 	}
 	status, err := serviceInstance.Run()
 	if err != nil {
-		log.Fatal(status, " - Error: ", err)
+		fmt.Println(status, "\nError: ", err)
+		os.Exit(1)
 	}
 	// Wait for logger output
 	time.Sleep(100 * time.Millisecond)

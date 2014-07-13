@@ -39,13 +39,13 @@ func (srv *ServiceRecord) Run() (string, error) {
 		command := os.Args[1]
 		switch command {
 		case "install":
-			return "Install whois service ...", srv.Install()
+			return srv.Install()
 		case "remove":
-			return "Remove whois service ...", srv.Remove()
+			return srv.Remove()
 		case "start":
-			return "Starting whois service ...", srv.Start()
+			return srv.Start()
 		case "stop":
-			return "Stoping whois service ...", srv.Stop()
+			return srv.Stop()
 		case "status":
 			return srv.Status()
 		}
@@ -63,7 +63,7 @@ func (srv *ServiceRecord) Run() (string, error) {
 	)
 	listener, err := net.Listen("tcp", serviceHostPort)
 	if err != nil {
-		return "Probably use 'sudo' command to grant permission", err
+		return "Possibly was a problem with the port binding", err
 	}
 	channel := make(chan client.ClientRecord, srv.Config.Connections)
 	repository := storage.New(srv.Config, mapp)
@@ -99,5 +99,5 @@ func (srv *ServiceRecord) Run() (string, error) {
 	}
 
 	// never happen, but need to complete code
-	return "If you see that, you lucky bastard", nil
+	return "If you see that, you are lucky bastard", nil
 }
