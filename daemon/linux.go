@@ -28,7 +28,7 @@ func (linux *LinuxRecord) checkStatus() (string, bool) {
 	output, err := exec.Command("service", linux.name, "status").Output()
 	if err == nil {
 		if matched, err := regexp.MatchString(linux.name, string(output)); err == nil && matched {
-			reg := regexp.MustCompile("pid  ([0-9]+);")
+			reg := regexp.MustCompile("pid  ([0-9]+)")
 			data := reg.FindStringSubmatch(string(output))
 			if len(data) > 1 {
 				return "Service (pid  " + data[1] + ") is running...", true
@@ -79,13 +79,17 @@ func (linux *LinuxRecord) Install() (string, error) {
 		return installAction + failed, err
 	}
 
+	if err := os.Chmod(srvPath, 0755); err != nil {
+		return installAction + failed, err
+	}
+
 	for _, i := range [...]string{"2", "3", "4", "5"} {
-		if err := os.Symlink(srvPath, "/etc/rc"+i+".d/S50"+linux.name); err != nil {
+		if err := os.Symlink(srvPath, "/etc/rc"+i+".d/S87"+linux.name); err != nil {
 			continue
 		}
 	}
 	for _, i := range [...]string{"0", "1", "6"} {
-		if err := os.Symlink(srvPath, "/etc/rc"+i+".d/K02"+linux.name); err != nil {
+		if err := os.Symlink(srvPath, "/etc/rc"+i+".d/K17"+linux.name); err != nil {
 			continue
 		}
 	}
@@ -105,12 +109,12 @@ func (linux *LinuxRecord) Remove() (string, error) {
 	}
 
 	for _, i := range [...]string{"2", "3", "4", "5"} {
-		if err := os.Remove("/etc/rc" + i + ".d/S50" + linux.name); err != nil {
+		if err := os.Remove("/etc/rc" + i + ".d/S87" + linux.name); err != nil {
 			continue
 		}
 	}
 	for _, i := range [...]string{"0", "1", "6"} {
-		if err := os.Remove("/etc/rc" + i + ".d/K02" + linux.name); err != nil {
+		if err := os.Remove("/etc/rc" + i + ".d/K17" + linux.name); err != nil {
 			continue
 		}
 	}
@@ -130,10 +134,10 @@ func (linux *LinuxRecord) Start() (string, error) {
 	}
 
 	if err := exec.Command("service", linux.name, "start").Run(); err != nil {
-		return "", err
+		return startAction + failed, err
 	}
 
-	return "", nil
+	return startAction + success, nil
 }
 
 func (linux *LinuxRecord) Stop() (string, error) {
@@ -148,10 +152,10 @@ func (linux *LinuxRecord) Stop() (string, error) {
 	}
 
 	if err := exec.Command("service", linux.name, "stop").Run(); err != nil {
-		return "", err
+		return stopAction + failed, err
 	}
 
-	return "", nil
+	return stopAction + success, nil
 }
 
 func (linux *LinuxRecord) Status() (string, error) {
@@ -205,11 +209,10 @@ start() {
     [ -x $exec ] || exit 5
 
     if ! [ -f $pidfile ]; then
-        prestart
         printf "Starting $servname:\t"
-        echo "\n$(date)\n" >> $logfile
-        $exec >> "$stdoutlog" 2>> "$stderrlog" &
-        pid=$!
+        echo "$(date)" >> $stdoutlog
+        $exec >> $stderrlog 2>> $stdoutlog &
+        echo $! > $pidfile
         touch $lockfile
         success
         echo
