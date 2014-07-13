@@ -2,7 +2,6 @@ package daemon
 
 import (
 	"errors"
-	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -28,7 +27,7 @@ func (linux *LinuxRecord) servicePath() string {
 func (linux *LinuxRecord) checkStatus() (string, bool) {
 	output, err := exec.Command("service", linux.name, "status").Output()
 	if err == nil {
-		if matched, err := regexp.MatchString("whoisd", string(output)); err == nil && matched {
+		if matched, err := regexp.MatchString(linux.name, string(output)); err == nil && matched {
 			reg := regexp.MustCompile("pid  ([0-9]+);")
 			data := reg.FindStringSubmatch(string(output))
 			if len(data) > 1 {
