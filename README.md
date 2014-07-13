@@ -31,6 +31,11 @@ Start of whoisd:
 ```sh
 sudo whoisd
 ```
+or start as daemon
+```sh
+sudo whoisd install
+sudo whoisd start
+```
 
 This will bring up whoisd listening on port 43 for client communication.
 
@@ -69,8 +74,6 @@ Options:
   -base=<name>      Storage index or database name
   -table=<name>     Storage type or table name
 ```
-_NOTE_: service commands released only for Mac OS X
-
 
 ### Config
 

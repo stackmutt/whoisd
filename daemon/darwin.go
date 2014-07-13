@@ -34,7 +34,7 @@ func (darwin *DarwinRecord) checkInstalled() bool {
 }
 
 // Check service is running
-func (darwin *DarwinRecord) checkStatus() (string, bool) {
+func (darwin *DarwinRecord) checkRunning() (string, bool) {
 	output, err := exec.Command("launchctl", "list", darwin.name).Output()
 	if err == nil {
 		if matched, err := regexp.MatchString(darwin.name, string(output)); err == nil && matched {
@@ -123,7 +123,7 @@ func (darwin *DarwinRecord) Start() (string, error) {
 		return startAction + failed, errors.New(darwin.description + " not installed")
 	}
 
-	if _, status := darwin.checkStatus(); status == true {
+	if _, status := darwin.checkRunning(); status == true {
 		return startAction + failed, errors.New("service already running")
 	}
 
@@ -145,7 +145,7 @@ func (darwin *DarwinRecord) Stop() (string, error) {
 		return stopAction + failed, errors.New(darwin.description + " not installed")
 	}
 
-	if _, status := darwin.checkStatus(); status == false {
+	if _, status := darwin.checkRunning(); status == false {
 		return stopAction + failed, errors.New("service already stopped")
 	}
 
@@ -166,7 +166,7 @@ func (darwin *DarwinRecord) Status() (string, error) {
 		return "Status could not defined", errors.New(darwin.description + " not installed")
 	}
 
-	statusAction, _ := darwin.checkStatus()
+	statusAction, _ := darwin.checkRunning()
 
 	return statusAction, nil
 }
