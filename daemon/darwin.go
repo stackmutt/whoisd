@@ -112,6 +112,7 @@ func (darwin *DarwinRecord) Remove() (string, error) {
 	return removeAction + success, nil
 }
 
+// Start the service
 func (darwin *DarwinRecord) Start() (string, error) {
 	startAction := "Starting " + darwin.description + ":"
 
@@ -134,6 +135,7 @@ func (darwin *DarwinRecord) Start() (string, error) {
 	return startAction + success, nil
 }
 
+// Stop the service
 func (darwin *DarwinRecord) Stop() (string, error) {
 	stopAction := "Stopping " + darwin.description + ":"
 
@@ -156,6 +158,7 @@ func (darwin *DarwinRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
+// Get service status
 func (darwin *DarwinRecord) Status() (string, error) {
 
 	if checkPrivileges() == false {

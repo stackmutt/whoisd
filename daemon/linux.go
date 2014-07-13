@@ -51,6 +51,7 @@ func (linux *LinuxRecord) checkRunning() (string, bool) {
 	return "Service is stoped", false
 }
 
+// Install the service
 func (linux *LinuxRecord) Install() (string, error) {
 	installAction := "Install " + linux.description + ":"
 
@@ -107,6 +108,7 @@ func (linux *LinuxRecord) Install() (string, error) {
 	return installAction + success, nil
 }
 
+// Remove the service
 func (linux *LinuxRecord) Remove() (string, error) {
 	removeAction := "Removing " + linux.description + ":"
 
@@ -136,6 +138,7 @@ func (linux *LinuxRecord) Remove() (string, error) {
 	return removeAction + success, nil
 }
 
+// Start the service
 func (linux *LinuxRecord) Start() (string, error) {
 	startAction := "Starting " + linux.description + ":"
 
@@ -158,6 +161,7 @@ func (linux *LinuxRecord) Start() (string, error) {
 	return startAction + success, nil
 }
 
+// Stop the service
 func (linux *LinuxRecord) Stop() (string, error) {
 	stopAction := "Stopping " + linux.description + ":"
 
@@ -180,6 +184,7 @@ func (linux *LinuxRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
+// Get service status
 func (linux *LinuxRecord) Status() (string, error) {
 
 	if checkPrivileges() == false {
