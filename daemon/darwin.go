@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"text/template"
 )
@@ -31,6 +32,11 @@ func (darwin *DarwinRecord) checkInstalled() bool {
 	}
 
 	return false
+}
+
+// Get executable path
+func execPath() (string, error) {
+	return filepath.Abs(os.Args[0])
 }
 
 // Check service is running
@@ -191,7 +197,7 @@ var propertyList = `<?xml version="1.0" encoding="UTF-8"?>
     <key>WorkingDirectory</key>
     <string>/usr/local/var</string>
     <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/{{.Name}}.log</string>
+    <string>/usr/local/var/log/{{.Name}}.err</string>
     <key>StandardOutPath</key>
     <string>/usr/local/var/log/{{.Name}}.log</string>
 </dict>

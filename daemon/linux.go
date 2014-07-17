@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"text/template"
 )
@@ -31,6 +32,11 @@ func (linux *LinuxRecord) checkInstalled() bool {
 	}
 
 	return false
+}
+
+// Get executable path
+func execPath() (string, error) {
+	return os.Readlink("/proc/self/exe")
 }
 
 // Check service is running

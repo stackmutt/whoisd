@@ -1,9 +1,7 @@
 package daemon
 
 import (
-	"os"
 	"os/user"
-	"path/filepath"
 )
 
 const (
@@ -25,7 +23,7 @@ func New(name, description string) (Daemon, error) {
 }
 
 func executablePath() (string, error) {
-	return filepath.Abs(os.Args[0])
+	return execPath()
 }
 
 func checkPrivileges() bool {
