@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"os/exec"
 	"os/user"
 )
 
