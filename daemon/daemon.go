@@ -23,6 +23,9 @@ func New(name, description string) (Daemon, error) {
 }
 
 func executablePath() (string, error) {
+	if path, err := exec.LookPath("whoisd"); err == nil {
+		return path, nil
+	}
 	return execPath()
 }
 
