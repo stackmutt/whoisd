@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"code.google.com/p/go.net/idna"
 	"github.com/takama/whoisd/config"
 	"github.com/takama/whoisd/mapper"
 	"github.com/takama/whoisd/storage/dummy"
@@ -235,6 +236,13 @@ func customJoin(format string, value []string) string {
 				buildTime = time.Now()
 			}
 			format = strings.Replace(format, "{date}", buildTime.Format(time.RFC3339), 1)
+		}
+		if strings.Contains(format, "{idn}") == true {
+			idnItem, err := idna.ToUnicode(item)
+			if err != nil {
+				idnItem = item
+			}
+			format = strings.Replace(format, "{idn}", idnItem, 1)
 		}
 		format = strings.Replace(format, "{string}", item, 1)
 	}

@@ -13,7 +13,7 @@ import (
 const (
 	defaultConfigPath  = "/etc/whoisd/whoisd.conf"
 	defaultMappingPath = "/etc/whoisd/conf.d/mapping.json"
-	defaultHost        = "localhost"
+	defaultHost        = "0.0.0.0"
 	defaultPort        = 43
 	defaultWorkers     = 1000
 	defaultConnections = 1000

@@ -81,7 +81,7 @@ Installed config file located in /etc/whoisd/whoisd.conf. Of course possible to 
 
 ```json
 {
-  "host": "localhost",
+  "host": "0.0.0.0",
   "port": 43,
   "workers": 1000,
   "connections": 1000,

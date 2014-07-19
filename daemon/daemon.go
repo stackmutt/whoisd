@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"os"
 	"os/exec"
 	"os/user"
 )
@@ -25,6 +26,10 @@ func New(name, description string) (Daemon, error) {
 
 func executablePath() (string, error) {
 	if path, err := exec.LookPath("whoisd"); err == nil {
+		_, err := os.Stat(path)
+		if os.IsNotExist(err) {
+			return execPath()
+		}
 		return path, nil
 	}
 	return execPath()

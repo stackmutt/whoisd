@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	Version = "0.07"
-	Date    = "2014-07-06T23:25:01Z"
+	Version = "0.08"
+	Date    = "2014-07-19T19:29:11Z"
 )
 
 type ServiceRecord struct {

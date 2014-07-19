@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"code.google.com/p/go.net/idna"
 	"github.com/takama/whoisd/storage"
 )
 
@@ -18,7 +19,7 @@ type ClientRecord struct {
 }
 
 // Sends a client data into the channel
-func (client *ClientRecord) HandleClient(channel chan ClientRecord) {
+func (client *ClientRecord) HandleClient(channel chan<- ClientRecord) {
 	buffer := make([]byte, queryBufferSize)
 	numBytes, err := client.Conn.Read(buffer)
 	if numBytes == 0 || err != nil {
@@ -29,10 +30,13 @@ func (client *ClientRecord) HandleClient(channel chan ClientRecord) {
 }
 
 // Asynchronous a client handling
-func ProcessClient(channel chan ClientRecord, repository *storage.StorageRecord) {
+func ProcessClient(channel <-chan ClientRecord, repository *storage.StorageRecord) {
 	for {
 		message := <-channel
-		query := string(message.Query)
+		query, err := idna.ToASCII(string(message.Query))
+		if err != nil {
+			query = string(message.Query)
+		}
 		data, ok := repository.Search(query)
 		message.Conn.Write([]byte(data))
 		log.Println(message.Conn.RemoteAddr().String(), query, ok)
