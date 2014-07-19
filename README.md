@@ -77,7 +77,7 @@ Options:
 
 ### Config
 
-Installed config file located in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through -config option. If config file is absent, used default configuration below: 
+The config file should be in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through -config option. If config file is absent, used default configuration below: 
 
 ```json
 {
@@ -94,7 +94,7 @@ Installed config file located in /etc/whoisd/whoisd.conf. Of course possible to 
   }
 }
 ```
-_NOTE_: dummy storage has two records for testing: "example.tld" and "google.com". You can test it: 
+_NOTE_: Valid storage types: Elasticsearch, Mysql, Dummy. Dummy storage has two records for testing: "example.tld" and "google.com". You can test it: 
 ```sh
 whois -h localhost example.tld
 ```
@@ -107,7 +107,7 @@ These fixtures placed in "storage/dummy" package directory.
 
 ### Mapping
 
-All required fields for whoisd must be defined in mapping file. Installed mapping file located in /etc/whoisd/conf.d/mapping.json. It possible to load mapping file through -mapping option. The context of the mapping file is described below:
+All required fields for whoisd must be defined in the mapping file. The mapping file represent all fields in your database as key names in the whoisd. The mapping file should be in /etc/whoisd/conf.d/mapping.json. It possible to load mapping file through -mapping option. The context of the mapping file is described below:
 
 ```json
 {
