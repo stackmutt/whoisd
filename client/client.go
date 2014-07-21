@@ -20,6 +20,12 @@ type ClientRecord struct {
 
 // Sends a client data into the channel
 func (client *ClientRecord) HandleClient(channel chan<- ClientRecord) {
+	defer func() {
+		if recovery := recover(); recovery != nil {
+			log.Println("Recovered in HandleClient:", recovery)
+			channel <- *client
+		}
+	}()
 	buffer := make([]byte, queryBufferSize)
 	numBytes, err := client.Conn.Read(buffer)
 	if numBytes == 0 || err != nil {
@@ -31,8 +37,17 @@ func (client *ClientRecord) HandleClient(channel chan<- ClientRecord) {
 
 // Asynchronous a client handling
 func ProcessClient(channel <-chan ClientRecord, repository *storage.StorageRecord) {
+	message := ClientRecord{}
+	defer func() {
+		if recovery := recover(); recovery != nil {
+			log.Println("Recovered in ProcessClient:", recovery)
+			if message.Conn != nil {
+				message.Conn.Close()
+			}
+		}
+	}()
 	for {
-		message := <-channel
+		message = <-channel
 		query, err := idna.ToASCII(string(message.Query))
 		if err != nil {
 			query = string(message.Query)
