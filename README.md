@@ -24,6 +24,12 @@ go version
 go env
 ```
 
+### Testing
+
+```sh
+whoisd -t -config=test/testconfig.conf -mapping=test/testmapping.json
+```
+
 ### Running
 
 Start of whoisd:
