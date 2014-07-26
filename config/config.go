@@ -131,7 +131,7 @@ func LoadMappingFile(path string) (*mapper.MapperRecord, error) {
 	record := new(mapper.MapperRecord)
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return nil, errors.New("Mapping file not found, please load it through -mapping option or install command")
+		return nil, errors.New("Mapping file not found, please load it through -mapping option or put in /etc/whoisd/conf.d/mapping.json")
 	}
 	mFile, err := os.Open(path)
 	if err != nil {
