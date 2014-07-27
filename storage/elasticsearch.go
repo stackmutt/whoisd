@@ -19,7 +19,7 @@ type ElasticsearchRecord struct {
 // Search data in the storage
 func (elastic *ElasticsearchRecord) Search(name string, query string) (map[string][]string, error) {
 
-	result, err := elastic.SearchRaw(elastic.Type, name, query)
+	result, err := elastic.searchRaw(elastic.Type, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (elastic *ElasticsearchRecord) Search(name string, query string) (map[strin
 // SearchRelated - search data in the storage from related type or table
 func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
 
-	result, err := elastic.SearchRaw(typeTable, name, query)
+	result, err := elastic.searchRaw(typeTable, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string,
 // SearchMultiple - search multiple records of data in the storage
 func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
 
-	result, err := elastic.SearchRaw(typeTable, name, query)
+	result, err := elastic.searchRaw(typeTable, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +68,8 @@ func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string
 	return data, nil
 }
 
-// SearchRaw - search raw data in the storage
-func (elastic *ElasticsearchRecord) SearchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
+// search raw data in the storage
+func (elastic *ElasticsearchRecord) searchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
 		return nil, errors.New("Incomplete request, request parameters could not be empty")

@@ -15,7 +15,7 @@ type DummyRecord struct {
 // Search data in the storage
 func (dummy *DummyRecord) Search(name string, query string) (map[string][]string, error) {
 
-	result, err := dummy.SearchRaw(dummy.TypeTable, name, query)
+	result, err := dummy.searchRaw(dummy.TypeTable, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (dummy *DummyRecord) Search(name string, query string) (map[string][]string
 // SearchRelated - search data in the storage from related type or table
 func (dummy *DummyRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
 
-	result, err := dummy.SearchRaw(typeTable, name, query)
+	result, err := dummy.searchRaw(typeTable, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (dummy *DummyRecord) SearchRelated(typeTable string, name string, query str
 // SearchMultiple - search multiple records of data in the storage
 func (dummy *DummyRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
 
-	result, err := dummy.SearchRaw(typeTable, name, query)
+	result, err := dummy.searchRaw(typeTable, name, query)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +64,8 @@ func (dummy *DummyRecord) SearchMultiple(typeTable string, name string, query st
 	return data, nil
 }
 
-// SearchRaw - search raw data in the storage
-func (dummy *DummyRecord) SearchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
+// search raw data in the storage
+func (dummy *DummyRecord) searchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
 		return nil, errors.New("Incomplete request, request parameters could not be empty")
