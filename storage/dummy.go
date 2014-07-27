@@ -1,9 +1,10 @@
-package dummy
+package storage
 
 import (
 	"errors"
 )
 
+// DummyRecord - standard record (struct) for dummy storage package
 type DummyRecord struct {
 	Host      string
 	Port      int
@@ -11,6 +12,7 @@ type DummyRecord struct {
 	TypeTable string
 }
 
+// Search data in the storage
 func (dummy *DummyRecord) Search(name string, query string) (map[string][]string, error) {
 
 	result, err := dummy.SearchRaw(dummy.TypeTable, name, query)
@@ -25,6 +27,7 @@ func (dummy *DummyRecord) Search(name string, query string) (map[string][]string
 	return data, nil
 }
 
+// SearchRelated - search data in the storage from related type or table
 func (dummy *DummyRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := dummy.SearchRaw(typeTable, name, query)
@@ -39,6 +42,7 @@ func (dummy *DummyRecord) SearchRelated(typeTable string, name string, query str
 	return data, nil
 }
 
+// SearchMultiple - search multiple records of data in the storage
 func (dummy *DummyRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := dummy.SearchRaw(typeTable, name, query)
@@ -60,13 +64,14 @@ func (dummy *DummyRecord) SearchMultiple(typeTable string, name string, query st
 	return data, nil
 }
 
+// SearchRaw - search raw data in the storage
 func (dummy *DummyRecord) SearchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
 		return nil, errors.New("Incomplete request, request parameters could not be empty")
 	}
 
-	data := make([]map[string][]string, 0)
+	var data []map[string][]string
 
 	for _, result := range dummyData[typeTable] {
 		for _, item := range result[name] {

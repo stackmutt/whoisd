@@ -13,13 +13,14 @@ const (
 	queryBufferSize = 256
 )
 
-type ClientRecord struct {
+// Record - standard record (struct) for client package
+type Record struct {
 	Conn  net.Conn
 	Query []byte
 }
 
-// Sends a client data into the channel
-func (client *ClientRecord) HandleClient(channel chan<- ClientRecord) {
+// HandleClient - Sends a client data into the channel
+func (client *Record) HandleClient(channel chan<- Record) {
 	defer func() {
 		if recovery := recover(); recovery != nil {
 			log.Println("Recovered in HandleClient:", recovery)
@@ -35,9 +36,9 @@ func (client *ClientRecord) HandleClient(channel chan<- ClientRecord) {
 	channel <- *client
 }
 
-// Asynchronous a client handling
-func ProcessClient(channel <-chan ClientRecord, repository *storage.StorageRecord) {
-	message := ClientRecord{}
+// ProcessClient - Asynchronous a client handling
+func ProcessClient(channel <-chan Record, repository *storage.Record) {
+	message := Record{}
 	defer func() {
 		if recovery := recover(); recovery != nil {
 			log.Println("Recovered in ProcessClient:", recovery)

@@ -1,10 +1,10 @@
-package mysql
+package storage
 
 import (
 	"testing"
 )
 
-func TestSearchEmpty(t *testing.T) {
+func TestMysqlSearchEmpty(t *testing.T) {
 	dummy := MysqlRecord{"localhost", 3760, "whois", "domain"}
 	var emptyResult map[string][]string
 	var err error

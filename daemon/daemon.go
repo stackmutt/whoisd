@@ -12,6 +12,8 @@ const (
 	failed         = "\t\t\t\t\t[\033[31mFAILED\033[0m]"
 )
 
+// Daemon interface has standard set of methods/commands
+// install, remove, start, stop, status
 type Daemon interface {
 	Install() (string, error)
 	Remove() (string, error)
@@ -20,6 +22,7 @@ type Daemon interface {
 	Status() (string, error)
 }
 
+// New - Create new daemon
 func New(name, description string) (Daemon, error) {
 	return newDaemon(name, description)
 }

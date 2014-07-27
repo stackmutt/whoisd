@@ -4,6 +4,7 @@ import (
 	"errors"
 )
 
+// WindowsRecord - standard record (struct) for windows version of daemon package
 type WindowsRecord struct {
 	name        string
 	description string
@@ -42,7 +43,7 @@ func (windows *WindowsRecord) Stop() (string, error) {
 	return stopAction + failed, errors.New("Windows daemon not supported")
 }
 
-// Get service status
+// Status - Get service status
 func (windows *WindowsRecord) Status() (string, error) {
 
 	return "Status could not defined", errors.New("Windows daemon not supported")

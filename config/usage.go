@@ -34,6 +34,7 @@ Options:
   -table=<name>     Storage type or table name
 `
 
+// Usage - get usage information
 func Usage() string {
 	return usage
 }

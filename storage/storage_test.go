@@ -12,7 +12,7 @@ func TestStorage(t *testing.T) {
 
 	conf := config.New()
 	flag.Parse()
-	mapp := new(mapper.MapperRecord)
+	mapp := new(mapper.Record)
 	storage := New(conf, mapp)
 	answer, ok := storage.Search("")
 	if ok != false {
@@ -28,30 +28,30 @@ func TestStorage(t *testing.T) {
 	if answer != "not found\n" {
 		t.Error("Expected answer is not found, got", answer)
 	}
-	mapp.Fields = make(map[string]mapper.MapperField)
-	mapp.Fields["01"] = mapper.MapperField{
+	mapp.Fields = make(map[string]mapper.Field)
+	mapp.Fields["01"] = mapper.Field{
 		Key:     "Domain Name: ",
 		Name:    []string{"name"},
 		Format:  "{idn}",
 		Related: "name",
 	}
-	mapp.Fields["03"] = mapper.MapperField{
+	mapp.Fields["03"] = mapper.Field{
 		Key:   "Registrar WHOIS Server: ",
 		Value: []string{"whois.markmonitor.com"},
 	}
-	mapp.Fields["05"] = mapper.MapperField{
+	mapp.Fields["05"] = mapper.Field{
 		Key:     "Updated Date: ",
 		Name:    []string{"updatedDate"},
 		Format:  "{date}",
 		Related: "name",
 	}
-	mapp.Fields["12"] = mapper.MapperField{
+	mapp.Fields["12"] = mapper.Field{
 		Key:      "Domain Status: ",
 		Name:     []string{"domainStatus"},
 		Multiple: true,
 		Related:  "name",
 	}
-	mapp.Fields["13"] = mapper.MapperField{
+	mapp.Fields["13"] = mapper.Field{
 		Key:       "Registry Registrant ID: ",
 		Name:      []string{"handle"},
 		Hide:      true,
@@ -59,7 +59,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "handle",
 		RelatedTo: "customer",
 	}
-	mapp.Fields["21"] = mapper.MapperField{
+	mapp.Fields["21"] = mapper.Field{
 		Key: "Registrant Phone: ",
 		Name: []string{
 			"phone.countryCode",
@@ -71,7 +71,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "handle",
 		RelatedTo: "customer",
 	}
-	mapp.Fields["52"] = mapper.MapperField{
+	mapp.Fields["52"] = mapper.Field{
 		Key:       "Name Server: ",
 		Name:      []string{"name"},
 		Multiple:  true,
@@ -79,7 +79,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "nsgroupId",
 		RelatedTo: "nameserver",
 	}
-	mapp.Fields["55"] = mapper.MapperField{
+	mapp.Fields["55"] = mapper.Field{
 		Key:       "",
 		Value:     []string{"1"},
 		Name:      []string{"updatedDate"},

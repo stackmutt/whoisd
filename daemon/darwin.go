@@ -9,6 +9,7 @@ import (
 	"text/template"
 )
 
+// DarwinRecord - standard record (struct) for darwin version of daemon package
 type DarwinRecord struct {
 	name        string
 	description string
@@ -48,9 +49,8 @@ func (darwin *DarwinRecord) checkRunning() (string, bool) {
 			data := reg.FindStringSubmatch(string(output))
 			if len(data) > 1 {
 				return "Service (pid  " + data[1] + ") is running...", true
-			} else {
-				return "Service is running...", true
 			}
+			return "Service is running...", true
 		}
 	}
 
@@ -164,7 +164,7 @@ func (darwin *DarwinRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
-// Get service status
+// Status - Get service status
 func (darwin *DarwinRecord) Status() (string, error) {
 
 	if checkPrivileges() == false {

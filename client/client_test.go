@@ -17,7 +17,7 @@ func TestClientHandling(t *testing.T) {
 	if err != nil {
 		t.Error("Expected config loading without error, got", err.Error())
 	}
-	channel := make(chan ClientRecord, conf.Connections)
+	channel := make(chan Record, conf.Connections)
 	repository := storage.New(conf, mapp)
 	go ProcessClient(channel, repository)
 
@@ -26,7 +26,7 @@ func TestClientHandling(t *testing.T) {
 	connIn, connOut := net.Pipe()
 	defer connIn.Close()
 	defer connOut.Close()
-	newClient := ClientRecord{Conn: connIn}
+	newClient := Record{Conn: connIn}
 
 	// prepare query for ProcessClient
 	newClient.Query = []byte("google.com")

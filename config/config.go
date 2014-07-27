@@ -24,7 +24,8 @@ const (
 	defaultTypeTable   = "domain"
 )
 
-type ConfigRecord struct {
+// Record - standard record (struct) for config package
+type Record struct {
 	ConfigPath  string
 	MappingPath string
 
@@ -36,20 +37,18 @@ type ConfigRecord struct {
 	Port        int
 	Workers     int
 	Connections int
-	Storage     StorageConfig
+	Storage     struct {
+		StorageType string
+		Host        string
+		Port        int
+		IndexBase   string
+		TypeTable   string
+	}
 }
 
-type StorageConfig struct {
-	StorageType string
-	Host        string
-	Port        int
-	IndexBase   string
-	TypeTable   string
-}
-
-// returns the config initialized with default values
-func New() *ConfigRecord {
-	config := new(ConfigRecord)
+// New - returns new config record initialized with default values
+func New() *Record {
+	config := new(Record)
 	flag.BoolVar(&config.ShowVersion, "version", false, "show version")
 	flag.BoolVar(&config.ShowVersion, "v", false, "show version")
 	flag.BoolVar(&config.TestMode, "t", false, "test mode")
@@ -69,16 +68,16 @@ func New() *ConfigRecord {
 	return config
 }
 
-// Loads settings from config file or from sh command line
-func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
+// Load settings from config file or from sh command line
+func (config *Record) Load() (*mapper.Record, error) {
 	var path string
 	var err error
-	mRecord := new(mapper.MapperRecord)
+	mapp := new(mapper.Record)
 
 	if err = config.LoadConfigFile(config.ConfigPath); err != nil {
 		return nil, err
 	}
-	if mRecord, err = LoadMappingFile(config.MappingPath); err != nil {
+	if mapp, err = LoadMappingFile(config.MappingPath); err != nil {
 		return nil, err
 	}
 
@@ -101,11 +100,11 @@ func (config *ConfigRecord) Load() (*mapper.MapperRecord, error) {
 	flags.StringVar(&config.Storage.TypeTable, "table", config.Storage.TypeTable, "")
 	flags.Parse(os.Args[1:])
 
-	return mRecord, nil
+	return mapp, nil
 }
 
-// loads congig file into config record
-func (config *ConfigRecord) LoadConfigFile(path string) error {
+// LoadConfigFile - loads congig file into config record
+func (config *Record) LoadConfigFile(path string) error {
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return nil
@@ -126,9 +125,9 @@ func (config *ConfigRecord) LoadConfigFile(path string) error {
 	return nil
 }
 
-// loads mapper records and returns it
-func LoadMappingFile(path string) (*mapper.MapperRecord, error) {
-	record := new(mapper.MapperRecord)
+// LoadMappingFile - loads mapper records and returns it
+func LoadMappingFile(path string) (*mapper.Record, error) {
+	file := new(mapper.Record)
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return nil, errors.New("Mapping file not found, please load it through -mapping option or put in /etc/whoisd/conf.d/mapping.json")
@@ -142,9 +141,9 @@ func LoadMappingFile(path string) (*mapper.MapperRecord, error) {
 	if _, err := mFile.Read(data); err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(data, &record); err != nil {
+	if err := json.Unmarshal(data, &file); err != nil {
 		return nil, err
 	}
 
-	return record, nil
+	return file, nil
 }

@@ -108,7 +108,7 @@ or
 ```sh
 whois -h localhost google.com
 ```
-These fixtures placed in "storage/dummy" package directory.
+These fixtures placed in "storage" package directory.
 
 
 ### Mapping

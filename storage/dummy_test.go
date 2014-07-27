@@ -1,10 +1,10 @@
-package dummy
+package storage
 
 import (
 	"testing"
 )
 
-func TestSearch(t *testing.T) {
+func TestDummySearch(t *testing.T) {
 
 	type testData struct {
 		query    string
@@ -46,7 +46,7 @@ func TestSearch(t *testing.T) {
 	}
 }
 
-func TestSearchRelated(t *testing.T) {
+func TestDummySearchRelated(t *testing.T) {
 
 	type testData struct {
 		query     string
@@ -81,7 +81,7 @@ func TestSearchRelated(t *testing.T) {
 	}
 }
 
-func TestSearchMultiple(t *testing.T) {
+func TestDummySearchMultiple(t *testing.T) {
 
 	type testData struct {
 		query     string
@@ -129,7 +129,7 @@ func TestSearchMultiple(t *testing.T) {
 	}
 }
 
-func TestSearchEmpty(t *testing.T) {
+func TestDummySearchEmpty(t *testing.T) {
 	dummy := DummyRecord{"localhost", 9200, "whois", "domain"}
 	var emptyResult map[string][]string
 	var err error

@@ -1,10 +1,12 @@
 package mapper
 
-type MapperRecord struct {
-	Fields map[string]MapperField // a list of fields from "01" to last number "nn" in ascending order
+// Record - standard record (struct) for mapper package
+type Record struct {
+	Fields map[string]Field // a list of fields from "01" to last number "nn" in ascending order
 }
 
-type MapperField struct {
+// Field - representation of one field
+type Field struct {
 	Key       string   // the label for the field in whois output
 	Value     []string // used if the field has prearranged value
 	Name      []string // the name of the field in the database, if the field is not prearranged ("value" is not defined)
@@ -16,6 +18,7 @@ type MapperField struct {
 	RelatedTo string   // the name of the table/type in the database through which made a relation
 }
 
-func (mapp *MapperRecord) Count() int {
-	return len(mapp.Fields)
+// Count - get count of fields
+func (mapper *Record) Count() int {
+	return len(mapper.Fields)
 }

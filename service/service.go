@@ -14,60 +14,63 @@ import (
 	"github.com/takama/whoisd/storage"
 )
 
+// Version of the Whois Daemon
+// Date of current version release
 const (
 	Version = "0.09"
 	Date    = "2014-07-26T14:52:02Z"
 )
 
-type ServiceRecord struct {
+// Record - standard record (struct) for service package
+type Record struct {
 	Name   string
-	Config *config.ConfigRecord
+	Config *config.Record
 	daemon.Daemon
 }
 
-// Create a new service record
-func New(name, description string) (*ServiceRecord, error) {
+// New - Create a new service record
+func New(name, description string) (*Record, error) {
 	daemonInstance, err := daemon.New(name, description)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ServiceRecord{name, config.New(), daemonInstance}, nil
+	return &Record{name, config.New(), daemonInstance}, nil
 }
 
 // Run or manage the service
-func (srv *ServiceRecord) Run() (string, error) {
+func (service *Record) Run() (string, error) {
 
 	// if received any kind of command, do it
 	if len(os.Args) > 1 {
 		command := os.Args[1]
 		switch command {
 		case "install":
-			return srv.Install()
+			return service.Install()
 		case "remove":
-			return srv.Remove()
+			return service.Remove()
 		case "start":
-			return srv.Start()
+			return service.Start()
 		case "stop":
-			return srv.Stop()
+			return service.Stop()
 		case "status":
-			return srv.Status()
+			return service.Status()
 		}
 	}
 
 	// Load configuration and get mapping
-	mapp, err := srv.Config.Load()
+	mapp, err := service.Config.Load()
 	if err != nil {
 		return "Loading mapping file was unsuccessful", err
 	}
 
 	// Logs for what is host&port used
-	serviceHostPort := fmt.Sprintf("%s:%d", srv.Config.Host, srv.Config.Port)
-	log.Printf("%s started on %s\n", srv.Name, serviceHostPort)
+	serviceHostPort := fmt.Sprintf("%s:%d", service.Config.Host, service.Config.Port)
+	log.Printf("%s started on %s\n", service.Name, serviceHostPort)
 	log.Printf("Used storage %s on %s:%d\n",
-		srv.Config.Storage.StorageType,
-		srv.Config.Storage.Host,
-		srv.Config.Storage.Port,
+		service.Config.Storage.StorageType,
+		service.Config.Storage.Host,
+		service.Config.Storage.Port,
 	)
 
 	// Set up listener for defined host and port
@@ -77,27 +80,27 @@ func (srv *ServiceRecord) Run() (string, error) {
 	}
 
 	// set up channel to collect client queries
-	channel := make(chan client.ClientRecord, srv.Config.Connections)
+	channel := make(chan client.Record, service.Config.Connections)
 
 	// set up current storage
-	repository := storage.New(srv.Config, mapp)
+	repository := storage.New(service.Config, mapp)
 
 	// init workers
-	for i := 0; i < srv.Config.Workers; i++ {
+	for i := 0; i < service.Config.Workers; i++ {
 		go client.ProcessClient(channel, repository)
 	}
 
 	// This block is for testing purpose only
-	if srv.Config.TestMode == true {
+	if service.Config.TestMode == true {
 		// make pipe connections for testing
 		// connIn will ready to write into by function ProcessClient
 		connIn, connOut := net.Pipe()
 		defer connIn.Close()
 		defer connOut.Close()
-		newClient := client.ClientRecord{Conn: connIn}
+		newClient := client.Record{Conn: connIn}
 
 		// prepare query for ProcessClient
-		newClient.Query = []byte(srv.Config.TestQuery)
+		newClient.Query = []byte(service.Config.TestQuery)
 
 		// send it into channel
 		channel <- newClient
@@ -115,15 +118,15 @@ func (srv *ServiceRecord) Run() (string, error) {
 	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	// set up channel on which to send accepted connections
-	listen := make(chan net.Conn, srv.Config.Connections)
-	go listenConnection(listener, listen)
+	listen := make(chan net.Conn, service.Config.Connections)
+	go acceptConnection(listener, listen)
 
 	// loop work cycle with accept connections or interrupt
 	// by system signal
 	for {
 		select {
 		case conn := <-listen:
-			newClient := client.ClientRecord{Conn: conn}
+			newClient := client.Record{Conn: conn}
 			go newClient.HandleClient(channel)
 		case killSignal := <-interrupt:
 			log.Println("Got signal:", killSignal)
@@ -140,8 +143,8 @@ func (srv *ServiceRecord) Run() (string, error) {
 	return "If you see that, you are lucky bastard", nil
 }
 
-// Listen a client connection and collect it in a channel
-func listenConnection(listener net.Listener, listen chan<- net.Conn) {
+// Accept a client connection and collect it in a channel
+func acceptConnection(listener net.Listener, listen chan<- net.Conn) {
 	defer func() {
 		if recovery := recover(); recovery != nil {
 			log.Println("Recovered in ListenConnection:", recovery)

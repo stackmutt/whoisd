@@ -20,22 +20,22 @@ func init() {
 }
 
 func main() {
-	serviceName, serviceDescription := "whoisd", "Whois Daemon"
-	serviceInstance, err := service.New(serviceName, serviceDescription)
+	daemonName, daemonDescription := "whoisd", "Whois Daemon"
+	daemon, err := service.New(daemonName, daemonDescription)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
 	}
 	flag.Parse()
-	if serviceInstance.Config.ShowVersion {
+	if daemon.Config.ShowVersion {
 		buildTime, err := time.Parse(time.RFC3339, service.Date)
 		if err != nil {
 			buildTime = time.Now()
 		}
-		fmt.Println(serviceName, service.Version, buildTime.Format(time.RFC3339))
+		fmt.Println(daemonName, service.Version, buildTime.Format(time.RFC3339))
 		os.Exit(0)
 	}
-	status, err := serviceInstance.Run()
+	status, err := daemon.Run()
 	if err != nil {
 		fmt.Println(status, "\nError: ", err)
 		os.Exit(1)

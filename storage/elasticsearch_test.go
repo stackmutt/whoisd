@@ -1,10 +1,10 @@
-package elasticsearch
+package storage
 
 import (
 	"testing"
 )
 
-func TestSearchEmpty(t *testing.T) {
+func TestElasticSearchEmpty(t *testing.T) {
 	dummy := ElasticsearchRecord{"localhost", 9200, "whois", "domain"}
 	var emptyResult map[string][]string
 	var err error

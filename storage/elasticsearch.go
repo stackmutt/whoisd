@@ -1,4 +1,4 @@
-package elasticsearch
+package storage
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// ElasticsearchRecord - standard record (struct) for elasticsearch storage package
 type ElasticsearchRecord struct {
 	Host  string
 	Port  int
@@ -15,7 +16,7 @@ type ElasticsearchRecord struct {
 	Type  string
 }
 
-// Search whois data in the storage
+// Search data in the storage
 func (elastic *ElasticsearchRecord) Search(name string, query string) (map[string][]string, error) {
 
 	result, err := elastic.SearchRaw(elastic.Type, name, query)
@@ -30,7 +31,7 @@ func (elastic *ElasticsearchRecord) Search(name string, query string) (map[strin
 	return data, nil
 }
 
-// Search whois data in the storage from related type or table
+// SearchRelated - search data in the storage from related type or table
 func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := elastic.SearchRaw(typeTable, name, query)
@@ -45,7 +46,7 @@ func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string,
 	return data, nil
 }
 
-// Search multiple records of whois data in the storage
+// SearchMultiple - search multiple records of data in the storage
 func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := elastic.SearchRaw(typeTable, name, query)
@@ -67,13 +68,15 @@ func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string
 	return data, nil
 }
 
+// SearchRaw - search raw data in the storage
 func (elastic *ElasticsearchRecord) SearchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
 		return nil, errors.New("Incomplete request, request parameters could not be empty")
 	}
 
-	all := make([]map[string][]string, 0)
+	var all []map[string][]string
+
 	url := "http://" + elastic.Host + ":" + strconv.Itoa(elastic.Port) + "/" + elastic.Index + "/" + typeTable
 	request := url + "/_search?q=" + name + ":" + query + ""
 	response, err := http.Get(request)

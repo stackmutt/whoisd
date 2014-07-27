@@ -9,9 +9,6 @@ import (
 	"code.google.com/p/go.net/idna"
 	"github.com/takama/whoisd/config"
 	"github.com/takama/whoisd/mapper"
-	"github.com/takama/whoisd/storage/dummy"
-	"github.com/takama/whoisd/storage/elasticsearch"
-	"github.com/takama/whoisd/storage/mysql"
 )
 
 type Storage interface {
@@ -20,17 +17,17 @@ type Storage interface {
 	SearchMultiple(typeTable string, name string, query string) (map[string][]string, error)
 }
 
-type StorageRecord struct {
+type Record struct {
 	CurrentStorage Storage
-	Mapper         *mapper.MapperRecord
+	Mapper         *mapper.Record
 }
 
 // Returns new Storage instance
-func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
+func New(conf *config.Record, mapp *mapper.Record) *Record {
 	switch strings.ToLower(conf.Storage.StorageType) {
 	case "mysql":
-		return &StorageRecord{
-			&mysql.MysqlRecord{
+		return &Record{
+			&MysqlRecord{
 				conf.Storage.Host,
 				conf.Storage.Port,
 				conf.Storage.IndexBase,
@@ -39,8 +36,8 @@ func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
 			mapp,
 		}
 	case "elasticsearch":
-		return &StorageRecord{
-			&elasticsearch.ElasticsearchRecord{
+		return &Record{
+			&ElasticsearchRecord{
 				conf.Storage.Host,
 				conf.Storage.Port,
 				conf.Storage.IndexBase,
@@ -51,8 +48,8 @@ func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
 	case "dummy":
 		fallthrough
 	default:
-		return &StorageRecord{
-			&dummy.DummyRecord{
+		return &Record{
+			&DummyRecord{
 				conf.Storage.Host,
 				conf.Storage.Port,
 				conf.Storage.IndexBase,
@@ -64,7 +61,7 @@ func New(conf *config.ConfigRecord, mapp *mapper.MapperRecord) *StorageRecord {
 }
 
 // Search and sort a data from the storage
-func (storage *StorageRecord) Search(query string) (answer string, ok bool) {
+func (storage *Record) Search(query string) (answer string, ok bool) {
 	ok = false
 	answer = "not found\n"
 	if len(strings.TrimSpace(query)) == 0 {
@@ -92,13 +89,13 @@ func (storage *StorageRecord) Search(query string) (answer string, ok bool) {
 	return answer, ok
 }
 
-// Loads a data into the Mapper
-func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, error) {
+// LoadMapper - Loads a data into the Mapper
+func (storage *Record) LoadMapper(query string) (*mapper.Record, error) {
 
 	var err error
 
-	mapp := new(mapper.MapperRecord)
-	mapp.Fields = make(map[string]mapper.MapperField)
+	mapp := new(mapper.Record)
+	mapp.Fields = make(map[string]mapper.Field)
 	baseRecord := make(map[string][]string)
 	relatedRecord := make(map[string]map[string][]string)
 
@@ -106,7 +103,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 	for index, record := range storage.Mapper.Fields {
 		if len(record.Value) != 0 && len(record.Related) == 0 &&
 			len(record.RelatedBy) == 0 && len(record.RelatedTo) == 0 {
-			mapp.Fields[index] = mapper.MapperField{
+			mapp.Fields[index] = mapper.Field{
 				Key:      record.Key,
 				Value:    record.Value,
 				Format:   record.Format,
@@ -140,7 +137,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 				}
 			}
 
-			mapp.Fields[index] = mapper.MapperField{
+			mapp.Fields[index] = mapper.Field{
 				Key:      record.Key,
 				Value:    answer,
 				Format:   record.Format,
@@ -185,7 +182,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 					answer = append(answer, result...)
 				}
 			}
-			mapp.Fields[index] = mapper.MapperField{
+			mapp.Fields[index] = mapper.Field{
 				Key:      record.Key,
 				Value:    answer,
 				Format:   record.Format,
@@ -199,7 +196,7 @@ func (storage *StorageRecord) LoadMapper(query string) (*mapper.MapperRecord, er
 }
 
 // prepares join and multiple actions in the answer
-func prepareAnswer(mapp *mapper.MapperRecord, keys []string) (answer string) {
+func prepareAnswer(mapp *mapper.Record, keys []string) (answer string) {
 	for _, index := range keys {
 		key := mapp.Fields[index].Key
 		if mapp.Fields[index].Hide == true {

@@ -1,4 +1,4 @@
-package dummy
+package storage
 
 var dummyData = map[string][]map[string][]string{
 	"domain": {

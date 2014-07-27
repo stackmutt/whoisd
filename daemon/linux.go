@@ -8,6 +8,7 @@ import (
 	"text/template"
 )
 
+// LinuxRecord - standard record (struct) for linux version of daemon package
 type LinuxRecord struct {
 	name        string
 	description string
@@ -47,9 +48,8 @@ func (linux *LinuxRecord) checkRunning() (string, bool) {
 			data := reg.FindStringSubmatch(string(output))
 			if len(data) > 1 {
 				return "Service (pid  " + data[1] + ") is running...", true
-			} else {
-				return "Service is running...", true
 			}
+			return "Service is running...", true
 		}
 	}
 
@@ -189,7 +189,7 @@ func (linux *LinuxRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
-// Get service status
+// Status - Get service status
 func (linux *LinuxRecord) Status() (string, error) {
 
 	if checkPrivileges() == false {
