@@ -11,18 +11,20 @@ import (
 	"github.com/takama/whoisd/mapper"
 )
 
+// Storage - the interface for every implementation of storage
 type Storage interface {
 	Search(name string, query string) (map[string][]string, error)
 	SearchRelated(typeTable string, name string, query string) (map[string][]string, error)
 	SearchMultiple(typeTable string, name string, query string) (map[string][]string, error)
 }
 
+// Record - standard record (struct) for storage package
 type Record struct {
 	CurrentStorage Storage
 	Mapper         *mapper.Record
 }
 
-// Returns new Storage instance
+// New - returns new Storage instance
 func New(conf *config.Record, mapp *mapper.Record) *Record {
 	switch strings.ToLower(conf.Storage.StorageType) {
 	case "mysql":
