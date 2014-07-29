@@ -32,7 +32,6 @@ func TestStorage(t *testing.T) {
 	mapp.Fields["01"] = mapper.Field{
 		Key:     "Domain Name: ",
 		Name:    []string{"name"},
-		Format:  "{idn}",
 		Related: "name",
 	}
 	mapp.Fields["03"] = mapper.Field{
