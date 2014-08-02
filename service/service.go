@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/takama/daemon"
 	"github.com/takama/whoisd/client"
 	"github.com/takama/whoisd/config"
-	"github.com/takama/whoisd/daemon"
 	"github.com/takama/whoisd/storage"
 )
 
