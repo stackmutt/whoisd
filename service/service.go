@@ -17,8 +17,8 @@ import (
 // Version of the Whois Daemon
 // Date of current version release
 const (
-	Version = "0.09"
-	Date    = "2014-07-26T14:52:02Z"
+	Version = "0.1.0"
+	Date    = "2014-08-02T12:01:33Z"
 )
 
 // Record - standard record (struct) for service package
