@@ -12,8 +12,8 @@ func TestStorage(t *testing.T) {
 
 	conf := config.New()
 	flag.Parse()
-	mapp := new(mapper.Record)
-	storage := New(conf, mapp)
+	bundle := make(mapper.Bundle, 1)
+	storage := New(conf, bundle)
 	answer, ok := storage.Search("")
 	if ok != false {
 		t.Error("Expected ok is false, got", ok)
@@ -28,29 +28,31 @@ func TestStorage(t *testing.T) {
 	if answer != "not found\n" {
 		t.Error("Expected answer is not found, got", answer)
 	}
-	mapp.Fields = make(map[string]mapper.Field)
-	mapp.Fields["01"] = mapper.Field{
+	entry := new(mapper.Entry)
+	entry.TLDs = []string{"com"}
+	entry.Fields = make(map[string]mapper.Field)
+	entry.Fields["01"] = mapper.Field{
 		Key:     "Domain Name: ",
 		Name:    []string{"name"},
 		Related: "name",
 	}
-	mapp.Fields["03"] = mapper.Field{
+	entry.Fields["03"] = mapper.Field{
 		Key:   "Registrar WHOIS Server: ",
 		Value: []string{"whois.markmonitor.com"},
 	}
-	mapp.Fields["05"] = mapper.Field{
+	entry.Fields["05"] = mapper.Field{
 		Key:     "Updated Date: ",
 		Name:    []string{"updatedDate"},
 		Format:  "{date}",
 		Related: "name",
 	}
-	mapp.Fields["12"] = mapper.Field{
+	entry.Fields["12"] = mapper.Field{
 		Key:      "Domain Status: ",
 		Name:     []string{"domainStatus"},
 		Multiple: true,
 		Related:  "name",
 	}
-	mapp.Fields["13"] = mapper.Field{
+	entry.Fields["13"] = mapper.Field{
 		Key:       "Registry Registrant ID: ",
 		Name:      []string{"handle"},
 		Hide:      true,
@@ -58,7 +60,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "handle",
 		RelatedTo: "customer",
 	}
-	mapp.Fields["21"] = mapper.Field{
+	entry.Fields["21"] = mapper.Field{
 		Key: "Registrant Phone: ",
 		Name: []string{
 			"phone.countryCode",
@@ -70,7 +72,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "handle",
 		RelatedTo: "customer",
 	}
-	mapp.Fields["52"] = mapper.Field{
+	entry.Fields["52"] = mapper.Field{
 		Key:       "Name Server: ",
 		Name:      []string{"name"},
 		Multiple:  true,
@@ -78,7 +80,7 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "nsgroupId",
 		RelatedTo: "nameserver",
 	}
-	mapp.Fields["55"] = mapper.Field{
+	entry.Fields["55"] = mapper.Field{
 		Key:       "",
 		Value:     []string{"1"},
 		Name:      []string{"updatedDate"},
@@ -87,7 +89,8 @@ func TestStorage(t *testing.T) {
 		RelatedBy: "id",
 		RelatedTo: "whois",
 	}
-	storage = New(conf, mapp)
+	bundle = append(bundle, *entry)
+	storage = New(conf, bundle)
 	answer, ok = storage.Search("google.com")
 	if ok != true {
 		t.Error("Expected ok is true, got", ok)
@@ -110,7 +113,7 @@ Name Server: ns4.google.com
 		t.Error("Expected answer:\n", expected, "\n, got:\n", answer)
 	}
 	conf.Storage.StorageType = "mysql"
-	storage = New(conf, mapp)
+	storage = New(conf, bundle)
 	answer, ok = storage.Search("mmm")
 	if ok != false {
 		t.Error("Expected ok is false, got", ok)
@@ -119,7 +122,7 @@ Name Server: ns4.google.com
 		t.Error("Expected answer is not found, got", answer)
 	}
 	conf.Storage.StorageType = "elasticsearch"
-	storage = New(conf, mapp)
+	storage = New(conf, bundle)
 	answer, ok = storage.Search("eee")
 	if ok != false {
 		t.Error("Expected ok is false, got", ok)

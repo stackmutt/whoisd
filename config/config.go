@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -69,16 +70,15 @@ func New() *Record {
 }
 
 // Load settings from config file or from sh command line
-func (config *Record) Load() (*mapper.Record, error) {
+func (config *Record) Load() (mapper.Bundle, error) {
 	var path string
-	var err error
-	mapp := new(mapper.Record)
 
-	if err = config.LoadConfigFile(config.ConfigPath); err != nil {
+	if err := config.loadConfigFile(config.ConfigPath); err != nil {
 		return nil, err
 	}
-	if mapp, err = LoadMappingFile(config.MappingPath); err != nil {
-		return nil, err
+	bundle, err := loadMappingFile(config.MappingPath)
+	if err != nil {
+		return bundle, err
 	}
 
 	// overwrite config from file by cmd flags
@@ -100,12 +100,12 @@ func (config *Record) Load() (*mapper.Record, error) {
 	flags.StringVar(&config.Storage.TypeTable, "table", config.Storage.TypeTable, "")
 	flags.Parse(os.Args[1:])
 
-	return mapp, nil
+	return bundle, nil
 }
 
-// LoadConfigFile - loads congig file into config record
-func (config *Record) LoadConfigFile(path string) error {
-	stat, err := os.Stat(path)
+// loadConfigFile - loads congig file into config record
+func (config *Record) loadConfigFile(path string) error {
+	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return nil
 	}
@@ -114,36 +114,28 @@ func (config *Record) LoadConfigFile(path string) error {
 		return err
 	}
 	defer file.Close()
-	data := make([]byte, stat.Size())
-	if _, err := file.Read(data); err != nil {
-		return err
-	}
-	if err := json.Unmarshal(data, &config); err != nil {
+	if err := json.NewDecoder(bufio.NewReader(file)).Decode(&config); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// LoadMappingFile - loads mapper records and returns it
-func LoadMappingFile(path string) (*mapper.Record, error) {
-	file := new(mapper.Record)
-	stat, err := os.Stat(path)
+// loadMappingFile - loads mapper records and returns it
+func loadMappingFile(path string) (mapper.Bundle, error) {
+	bundle := make(mapper.Bundle, 0)
+	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return nil, errors.New("Mapping file not found, please load it through -mapping option or put in /etc/whoisd/conf.d/mapping.json")
 	}
-	mFile, err := os.Open(path)
+	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return bundle, err
 	}
-	defer mFile.Close()
-	data := make([]byte, stat.Size())
-	if _, err := mFile.Read(data); err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(data, &file); err != nil {
-		return nil, err
+	defer file.Close()
+	if err := json.NewDecoder(bufio.NewReader(file)).Decode(&bundle); err != nil {
+		return bundle, err
 	}
 
-	return file, nil
+	return bundle, nil
 }

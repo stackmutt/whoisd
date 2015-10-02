@@ -17,8 +17,8 @@ import (
 // Version of the Whois Daemon
 // Date of current version release
 const (
-	Version = "0.1.0"
-	Date    = "2014-08-02T12:01:33Z"
+	Version = "0.2.0"
+	Date    = "2015-10-02T16:16:16Z"
 )
 
 // Record - standard record (struct) for service package
@@ -59,7 +59,7 @@ func (service *Record) Run() (string, error) {
 	}
 
 	// Load configuration and get mapping
-	mapp, err := service.Config.Load()
+	bundle, err := service.Config.Load()
 	if err != nil {
 		return "Loading mapping file was unsuccessful", err
 	}
@@ -83,7 +83,7 @@ func (service *Record) Run() (string, error) {
 	channel := make(chan client.Record, service.Config.Connections)
 
 	// set up current storage
-	repository := storage.New(service.Config, mapp)
+	repository := storage.New(service.Config, bundle)
 
 	// init workers
 	for i := 0; i < service.Config.Workers; i++ {
