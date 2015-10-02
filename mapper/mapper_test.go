@@ -6,8 +6,13 @@ import (
 
 func TestMapper(t *testing.T) {
 
-	mapp := Record{}
-	if mapp.Count() != 0 {
-		t.Error("Expected empty mapper record, got", mapp.Count())
+	bundle := make(Bundle, 2)
+	bundle[0].TLDs = []string{"com", "net"}
+	bundle[1].TLDs = []string{"tld"}
+	if bundle.EntryByTLD("net").TLDs[0] != "com" {
+		t.Error("Expected com, net entry, got", bundle.EntryByTLD("net").TLDs)
+	}
+	if bundle.EntryByTLD("tld").TLDs[0] != "tld" {
+		t.Error("Expected tld entry, got", bundle.EntryByTLD("tld").TLDs)
 	}
 }

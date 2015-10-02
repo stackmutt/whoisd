@@ -59,7 +59,7 @@ func (service *Record) Run() (string, error) {
 	}
 
 	// Load configuration and get mapping
-	mapp, err := service.Config.Load()
+	bundle, err := service.Config.Load()
 	if err != nil {
 		return "Loading mapping file was unsuccessful", err
 	}
@@ -83,7 +83,7 @@ func (service *Record) Run() (string, error) {
 	channel := make(chan client.Record, service.Config.Connections)
 
 	// set up current storage
-	repository := storage.New(service.Config, mapp)
+	repository := storage.New(service.Config, bundle)
 
 	// init workers
 	for i := 0; i < service.Config.Workers; i++ {

@@ -19,12 +19,12 @@ type Storage interface {
 
 // Record - standard record (struct) for storage package
 type Record struct {
-	CurrentStorage Storage
-	Mapper         *mapper.Record
+	dataStore Storage
+	mapper.Bundle
 }
 
 // New - returns new Storage instance
-func New(conf *config.Record, mapp *mapper.Record) *Record {
+func New(conf *config.Record, bundle mapper.Bundle) *Record {
 	switch strings.ToLower(conf.Storage.StorageType) {
 	case "mysql":
 		return &Record{
@@ -34,7 +34,7 @@ func New(conf *config.Record, mapp *mapper.Record) *Record {
 				conf.Storage.IndexBase,
 				conf.Storage.TypeTable,
 			},
-			mapp,
+			bundle,
 		}
 	case "elasticsearch":
 		return &Record{
@@ -44,7 +44,7 @@ func New(conf *config.Record, mapp *mapper.Record) *Record {
 				conf.Storage.IndexBase,
 				conf.Storage.TypeTable,
 			},
-			mapp,
+			bundle,
 		}
 	case "dummy":
 		fallthrough
@@ -56,7 +56,7 @@ func New(conf *config.Record, mapp *mapper.Record) *Record {
 				conf.Storage.IndexBase,
 				conf.Storage.TypeTable,
 			},
-			mapp,
+			bundle,
 		}
 	}
 }
@@ -65,154 +65,177 @@ func New(conf *config.Record, mapp *mapper.Record) *Record {
 func (storage *Record) Search(query string) (answer string, ok bool) {
 	ok = false
 	answer = "not found\n"
+	log.Println("query:", query)
 	if len(strings.TrimSpace(query)) == 0 {
 		log.Println("Empty query")
 	} else {
-		mapp, err := storage.LoadMapper(strings.TrimSpace(query))
+		entry, err := storage.request(strings.TrimSpace(query))
 		if err != nil {
 			log.Println("Query:", query, err.Error())
 		} else {
-			if mapp == nil || mapp.Count() == 0 {
+			if entry == nil || len(entry.Fields) == 0 {
 				return answer, ok
 			}
 			ok = true
 
 			// get keys of a map and sort their
-			keys := make([]string, 0, mapp.Count())
-			for key := range mapp.Fields {
+			keys := make([]string, 0, len(entry.Fields))
+			for key := range entry.Fields {
 				keys = append(keys, key)
 			}
 			sort.Strings(keys)
-			answer = prepareAnswer(mapp, keys)
+			answer = prepareAnswer(entry, keys)
 		}
 	}
 
 	return answer, ok
 }
 
-// LoadMapper - Loads a data into the Mapper
-func (storage *Record) LoadMapper(query string) (*mapper.Record, error) {
+// request - get and load bundle by query
+func (storage *Record) request(query string) (*mapper.Entry, error) {
+	TLD := detachTLD(query)
+	if TLD == "" {
+		return nil, nil
+	}
+	template := storage.Bundle.EntryByTLD(TLD)
+	if template == nil {
+		return nil, nil
+	}
 
 	var err error
 
-	mapp := new(mapper.Record)
-	mapp.Fields = make(map[string]mapper.Field)
-	baseRecord := make(map[string][]string)
-	relatedRecord := make(map[string]map[string][]string)
+	entry := new(mapper.Entry)
+	entry.Fields = make(map[string]mapper.Field)
+	baseField := make(map[string][]string)
+	relatedField := make(map[string]map[string][]string)
 
-	// Loads prearranged values
-	for index, record := range storage.Mapper.Fields {
-		if len(record.Value) != 0 && len(record.Related) == 0 &&
-			len(record.RelatedBy) == 0 && len(record.RelatedTo) == 0 {
-			mapp.Fields[index] = mapper.Field{
-				Key:      record.Key,
-				Value:    record.Value,
-				Format:   record.Format,
-				Multiple: record.Multiple,
-				Hide:     record.Hide,
+	// Loads fields with constant values
+	for index, field := range template.Fields {
+		if len(field.Value) != 0 && len(field.Related) == 0 &&
+			len(field.RelatedBy) == 0 && len(field.RelatedTo) == 0 {
+			entry.Fields[index] = mapper.Field{
+				Key:      field.Key,
+				Value:    field.Value,
+				Format:   field.Format,
+				Multiple: field.Multiple,
+				Hide:     field.Hide,
 			}
 		}
 	}
 
-	// Loads base record
-	for index, record := range storage.Mapper.Fields {
-		// Check for base record
-		if len(record.Value) == 0 && len(record.Related) != 0 &&
-			(len(record.RelatedBy) == 0 || len(record.RelatedTo) == 0) {
-			// if not cached, do it
-			if len(baseRecord) == 0 {
-				baseRecord, err = storage.CurrentStorage.Search(record.Related, query)
+	// Loads base fields (non related)
+	for index, field := range template.Fields {
+		// Detect base field
+		if len(field.Value) == 0 && len(field.Related) != 0 &&
+			(len(field.RelatedBy) == 0 || len(field.RelatedTo) == 0) {
+			// if baseField not loaded, do it
+			if len(baseField) == 0 {
+				baseField, err = storage.dataStore.Search(field.Related, query)
 				if err != nil {
 					return nil, err
 				}
-				if len(baseRecord) == 0 {
+				if len(baseField) == 0 {
 					return nil, nil
 				}
 			}
-			answer := []string{}
+			value := []string{}
 
-			// collects all fields into answer
-			for _, item := range record.Name {
-				if result, ok := baseRecord[item]; ok {
-					answer = append(answer, result...)
+			// collects all values into value
+			for _, item := range field.Name {
+				if result, ok := baseField[item]; ok {
+					value = append(value, result...)
 				}
 			}
 
-			mapp.Fields[index] = mapper.Field{
-				Key:      record.Key,
-				Value:    answer,
-				Format:   record.Format,
-				Multiple: record.Multiple,
-				Hide:     record.Hide,
+			entry.Fields[index] = mapper.Field{
+				Key:      field.Key,
+				Value:    value,
+				Format:   field.Format,
+				Multiple: field.Multiple,
+				Hide:     field.Hide,
 			}
 		}
 	}
 
 	// Loads related records
-	for index, record := range storage.Mapper.Fields {
-		// Check for related record
-		if len(record.RelatedBy) != 0 && len(record.RelatedTo) != 0 && len(record.Related) != 0 {
-			answer := []string{}
-			nameToAsk := record.RelatedBy
-			queryRelated := strings.Join(baseRecord[record.Related], "")
+	for index, field := range template.Fields {
+		// Detect related fields
+		if len(field.RelatedBy) != 0 && len(field.RelatedTo) != 0 && len(field.Related) != 0 {
+			value := []string{}
+			queryRelated := strings.Join(baseField[field.Related], "")
 
-			// if non-related record from specified type/table
-			if len(record.Value) != 0 {
-				queryRelated = record.Value[0]
+			// if non-related field from specified type/table
+			if len(field.Value) != 0 {
+				queryRelated = field.Value[0]
 			}
 
-			// if record not cached, do it
-			if _, ok := relatedRecord[record.Related]; ok == false {
-				if record.Multiple {
-					relatedRecord[record.Related], err = storage.CurrentStorage.SearchMultiple(
-						record.RelatedTo,
-						nameToAsk,
+			// if field not cached, do it
+			if _, ok := relatedField[field.Related]; ok == false {
+				if field.Multiple {
+					relatedField[field.Related], err = storage.dataStore.SearchMultiple(
+						field.RelatedTo,
+						field.RelatedBy,
 						queryRelated,
 					)
+					if err != nil {
+						return nil, err
+					}
 				} else {
-					relatedRecord[record.Related], err = storage.CurrentStorage.SearchRelated(
-						record.RelatedTo,
-						nameToAsk,
+					relatedField[field.Related], err = storage.dataStore.SearchRelated(
+						field.RelatedTo,
+						field.RelatedBy,
 						queryRelated,
 					)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
-			// collects all fields into answer
-			for _, item := range record.Name {
-				if result, ok := relatedRecord[record.Related][item]; ok {
-					answer = append(answer, result...)
+			// collects all values into value
+			for _, item := range field.Name {
+				if result, ok := relatedField[field.Related][item]; ok {
+					value = append(value, result...)
 				}
 			}
-			mapp.Fields[index] = mapper.Field{
-				Key:      record.Key,
-				Value:    answer,
-				Format:   record.Format,
-				Multiple: record.Multiple,
-				Hide:     record.Hide,
+			entry.Fields[index] = mapper.Field{
+				Key:      field.Key,
+				Value:    value,
+				Format:   field.Format,
+				Multiple: field.Multiple,
+				Hide:     field.Hide,
 			}
 		}
 	}
 
-	return mapp, nil
+	return entry, nil
+}
+
+// detachTLD - isolates TLD part from a query
+func detachTLD(query string) (TLD string) {
+	parts := strings.Split(query, ".")
+	if len(parts) > 1 {
+		TLD = parts[len(parts)-1]
+	}
+	return
 }
 
 // prepares join and multiple actions in the answer
-func prepareAnswer(mapp *mapper.Record, keys []string) (answer string) {
+func prepareAnswer(entry *mapper.Entry, keys []string) (answer string) {
 	for _, index := range keys {
-		key := mapp.Fields[index].Key
-		if mapp.Fields[index].Hide == true {
+		key := entry.Fields[index].Key
+		if entry.Fields[index].Hide == true {
 			answer = strings.Join([]string{answer, key, "", "\n"}, "")
 		} else {
-			if mapp.Fields[index].Multiple == true {
-				for _, value := range mapp.Fields[index].Value {
+			if entry.Fields[index].Multiple == true {
+				for _, value := range entry.Fields[index].Value {
 					answer = strings.Join([]string{answer, key, value, "\n"}, "")
 				}
 			} else {
 				var value string
-				if mapp.Fields[index].Format != "" {
-					value = customJoin(mapp.Fields[index].Format, mapp.Fields[index].Value)
+				if entry.Fields[index].Format != "" {
+					value = customJoin(entry.Fields[index].Format, entry.Fields[index].Value)
 				} else {
-					value = strings.Join(mapp.Fields[index].Value, " ")
+					value = strings.Join(entry.Fields[index].Value, " ")
 				}
 				answer = strings.Join([]string{answer, key, value, "\n"}, "")
 			}
