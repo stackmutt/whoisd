@@ -68,7 +68,7 @@ func (dummy *DummyRecord) SearchMultiple(typeTable string, name string, query st
 func (dummy *DummyRecord) searchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
-		return nil, errors.New("Incomplete request, request parameters could not be empty")
+		return nil, errors.New("Incomplete request, request parameters could not be empty: " + typeTable + name + query)
 	}
 
 	var data []map[string][]string

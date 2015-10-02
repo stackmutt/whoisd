@@ -9,7 +9,7 @@ func TestConfig(t *testing.T) {
 	conf := New()
 	conf.ConfigPath = ""
 	conf.MappingPath = ""
-	mapp, err := conf.Load()
+	bundle, err := conf.Load()
 	if err == nil {
 		t.Error("Expected error of loading mapping file, got nothing")
 	}
@@ -19,12 +19,12 @@ func TestConfig(t *testing.T) {
 	if conf.Workers != 1000 {
 		t.Error("Expected 100 workers, got", conf.Workers)
 	}
-	if mapp != nil {
-		t.Error("Expected nil mapper record, got not nil mapper record")
+	if len(bundle) != 0 {
+		t.Error("Expected empty bundle slice, got not empty bundle slice")
 	}
 	conf.ConfigPath = "../test/testconfig.conf"
 	conf.MappingPath = "../test/testmapping.json"
-	mapp, err = conf.Load()
+	bundle, err = conf.Load()
 	if err != nil {
 		t.Error("Expected config loading without error, got", err.Error())
 	}
@@ -34,22 +34,23 @@ func TestConfig(t *testing.T) {
 	if conf.Workers != 100 {
 		t.Error("Expected 100 workers, got", conf.Workers)
 	}
-	if len(mapp.Fields) == 0 {
-		t.Error("Expected loading of mapper, got empty mapper")
+	if len(bundle) == 0 {
+		t.Error("Expected loading of bundle, got empty bundle")
 	}
+	entry := bundle.EntryByTLD("com")
 	key := "01"
 	expected := "Domain Name: "
-	if mapp.Fields[key].Key != expected {
-		t.Error("Expected", expected, ", got", mapp.Fields[key].Key)
+	if entry.Fields[key].Key != expected {
+		t.Error("Expected", expected, ", got", entry.Fields[key].Key)
 	}
 	key = "02"
 	expected = "name"
-	if mapp.Fields[key].Related != expected {
-		t.Error("Expected", expected, ", got", mapp.Fields[key].Related)
+	if entry.Fields[key].Related != expected {
+		t.Error("Expected", expected, ", got", entry.Fields[key].Related)
 	}
 	key = "05"
 	expected = "{date}"
-	if mapp.Fields[key].Format != expected {
-		t.Error("Expected", expected, ", got", mapp.Fields[key].Format)
+	if entry.Fields[key].Format != expected {
+		t.Error("Expected", expected, ", got", entry.Fields[key].Format)
 	}
 }
