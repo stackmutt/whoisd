@@ -7,7 +7,7 @@ Whois Daemon complies with the requirements of [ICANN](https://www.icann.org/res
 
 [![Build Status](https://travis-ci.org/takama/whoisd.png?branch=master)](https://travis-ci.org/takama/whoisd)
 
-**Whois Daemon** is a light server which provide fast way to present whois information. The daemon based on Elasticsearch storage (Mysql storage still in development). 
+**Whois Daemon** represents a light server which provide fast way to produce whois information. The daemon based on Elasticsearch storage (Mysql storage still in development). 
 
 ### Install
 
@@ -15,13 +15,6 @@ This package is "go-gettable", just do:
 
 ```sh
 go get github.com/takama/whoisd
-```
-
-_NOTE_: you need go 1.2+ and need set PATH="$GOPATH/bin". Please check your installation with
-
-```sh
-go version
-go env
 ```
 
 ### Testing
@@ -83,7 +76,7 @@ Options:
 
 ### Config
 
-The config file should be in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through -config option. If config file is absent, used default configuration below: 
+The config file should be in /etc/whoisd/whoisd.conf. Of course possible to load config settings from any other place through -config option. If config file is absent, used predefined configuration below: 
 
 ```json
 {
@@ -160,10 +153,10 @@ All required fields for whoisd must be defined in the mapping file. The mapping 
 
 - "TLDs" - a list of TLDs which accepted by Whois Daemon for specified fields
 - "Fields" - a list of fields from "01" to last number "nn" in ascending order
-- "key" - the label for the field (preinstalled config file has keys according to ICANN requirements)
-- "value" - use it if the field has prearranged value (not use any field from the database)
-- "name" - the name of the field in the database, if the field is not prearranged ("value" is not defined)
-- "related" - the name of the field in the database through which the request for 
+- "key" - a label for the field (preinstalled config file has keys according to ICANN requirements)
+- "value" - use it if the field has constant value (not defined field from the database)
+- "name" - a name of the field in a database, if the field has not constant value ("value" is not defined)
+- "related" - a name of the field in a database through which a request for 
 
 ```json
 [
@@ -180,8 +173,8 @@ All required fields for whoisd must be defined in the mapping file. The mapping 
 ]
 ```
 
-- "format" - special instructions to indicate how to display field, examples of the use of this will be shown below
-- "{date}" - used in the format to indicate that the field is a date and need special formatting of the date RFС3339
+- "format" - special instructions to indicate how to display field, the examples shown below
+- "{date}" - used in the format to indicate that the field is a 'date' and need special formatting of the date RFС3339
 
 ```json
 [
@@ -207,14 +200,14 @@ All required fields for whoisd must be defined in the mapping file. The mapping 
 ]
 ```
 
-- "multiple" - if this option is set to 'true', then for each value will be repeated label in whois output like that:
+- "multiple" - if this option is set to 'true', each value will be repeated in whois output with the same label like that:
 ```
 Name Server: ns1.example.com
 Name Server: ns2.example.com
 Name Server: ns3.example.com
 ```
-- "relatedBy" - the name of the field in the database through which the related request for 
-- "relatedTo" - the name of the table/type in the database through which made a relation
+- "relatedBy" - a name of the field in a database through which related a request for 
+- "relatedTo" - a name of the table/type in a database through which made a relation
 
 ```json
 [
@@ -233,7 +226,7 @@ Name Server: ns3.example.com
 ]
 ```
 
-- "hide" - if this option is set to 'true', the value of the field will not shown in whois output
+- "hide" - if this option is set to 'true', a value of the field will not shown in whois output
 
 ```json
 [
@@ -260,7 +253,7 @@ Name Server: ns3.example.com
 ```
 
 - "name": ["name.fullName"] - use dot notation for embedded fields (MySQL storage not allowed)
-- "name": ["name.firstName", "name.lastName"] - all these fields will be joined by default
+- "name": ["name.firstName", "name.lastName"] - all values of the fields will be joined by default
 
 ```json
 [
@@ -279,7 +272,7 @@ Name Server: ns3.example.com
 ]
 ```
 
-- "format": "{string}.{string}{string}" - indicate that the fields ["phone.countryCode", "phone.areaCode", "phone.subscriberNumber"] need special formatting with described format (they are not simple joined)
+- "format": "{string}.{string}{string}" - indicate that the fields ["phone.countryCode", "phone.areaCode", "phone.subscriberNumber"] need special formatting "{string}.{string}{string}" (they are not simple joined)
 - {string} - represent one string field in format option
 
 ```json
@@ -295,7 +288,7 @@ Name Server: ns3.example.com
 ]
 ```
 
-- is the example of the formating where used {date}, because the name of the field has not present, the result is {date} will be replaced by CURRENT date in RFC3339 format
+- a example of formating where used undefined tag "{date}", because a name of the field has not present, "{date}" will be replaced by CURRENT date in RFC3339 format
 
 
 ### TODO
@@ -305,6 +298,6 @@ Name Server: ns3.example.com
 - update storage records by Rest API
 
 
-Copyright (c) 2014 Igor Dolzhikov
+Copyright (c) 2015 Igor Dolzhikov
 
 [MIT License](https://github.com/takama/whoisd/blob/master/LICENSE)
