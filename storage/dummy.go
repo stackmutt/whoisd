@@ -6,9 +6,6 @@ import (
 
 // DummyRecord - standard record (struct) for dummy storage package
 type DummyRecord struct {
-	Host      string
-	Port      int
-	IndexBase string
 	TypeTable string
 }
 

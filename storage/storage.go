@@ -51,12 +51,7 @@ func New(conf *config.Record, bundle mapper.Bundle) *Record {
 		fallthrough
 	default:
 		return &Record{
-			&DummyRecord{
-				conf.Storage.Host,
-				conf.Storage.Port,
-				conf.Storage.IndexBase,
-				conf.Storage.TypeTable,
-			},
+			&DummyRecord{conf.Storage.TypeTable},
 			bundle,
 		}
 	}

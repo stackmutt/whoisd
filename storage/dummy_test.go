@@ -28,7 +28,7 @@ func TestDummySearch(t *testing.T) {
 		{"example.tld", "name", "dnssec", []string{"signedDelegation"}},
 	}
 
-	dummy := DummyRecord{"localhost", 9200, "whois", "domain"}
+	dummy := DummyRecord{"domain"}
 	for _, data := range tests {
 		result, err := dummy.Search(data.name, data.query)
 		if err != nil {
@@ -63,7 +63,7 @@ func TestDummySearchRelated(t *testing.T) {
 		{"MMA-2211", "handle", "customer", "address.street", []string{"2400 E. Bayshore Pkwy"}},
 	}
 
-	dummy := DummyRecord{"localhost", 9200, "whois", "domain"}
+	dummy := DummyRecord{"domain"}
 	for _, data := range tests {
 		result, err := dummy.SearchRelated(data.relatedTo, data.name, data.query)
 		if err != nil {
@@ -108,7 +108,7 @@ func TestDummySearchMultiple(t *testing.T) {
 		},
 	}
 
-	dummy := DummyRecord{"localhost", 9200, "whois", "domain"}
+	dummy := DummyRecord{"domain"}
 	for _, data := range tests {
 		result, err := dummy.SearchMultiple(data.relatedTo, data.name, data.query)
 		if err != nil {
@@ -130,7 +130,7 @@ func TestDummySearchMultiple(t *testing.T) {
 }
 
 func TestDummySearchEmpty(t *testing.T) {
-	dummy := DummyRecord{"localhost", 9200, "whois", "domain"}
+	dummy := DummyRecord{"domain"}
 	var emptyResult map[string][]string
 	var err error
 	emptyResult, err = dummy.Search("name", "")
