@@ -8,6 +8,7 @@ import (
 
 	"github.com/takama/whoisd/config"
 	"github.com/takama/whoisd/mapper"
+	"golang.org/x/net/idna"
 )
 
 // Storage - the interface for every implementation of storage
@@ -226,6 +227,9 @@ func prepareAnswer(entry *mapper.Entry, keys []string) (answer string) {
 		if entry.Fields[index].Hide == true {
 			answer = strings.Join([]string{answer, key, "", "\n"}, "")
 		} else {
+			if strings.Contains(entry.Fields[index].Format, "{idn}") == true {
+				entry.Fields[index] = decodeIDN(entry.Fields[index])
+			}
 			if entry.Fields[index].Multiple == true {
 				for _, value := range entry.Fields[index].Value {
 					answer = strings.Join([]string{answer, key, value, "\n"}, "")
@@ -233,7 +237,7 @@ func prepareAnswer(entry *mapper.Entry, keys []string) (answer string) {
 			} else {
 				var value string
 				if entry.Fields[index].Format != "" {
-					value = customJoin(entry.Fields[index].Format, entry.Fields[index].Value)
+					value = loadTags(entry.Fields[index].Format, entry.Fields[index].Value)
 				} else {
 					value = strings.Join(entry.Fields[index].Value, " ")
 				}
@@ -245,8 +249,23 @@ func prepareAnswer(entry *mapper.Entry, keys []string) (answer string) {
 	return answer
 }
 
-// loads all defined tags from preassigned data before join
-func customJoin(format string, value []string) string {
+// decodes IDN names to Unicode and adds it to value
+func decodeIDN(field mapper.Field) mapper.Field {
+	for _, item := range field.Value {
+		idnItem, err := idna.ToUnicode(item)
+		if err == nil && idnItem != item {
+			field.Value = append(
+				field.Value,
+				strings.Replace(field.Format, "{idn}", idnItem, 1),
+			)
+		}
+	}
+	field.Format = ""
+	return field
+}
+
+// loads all defined tags from value
+func loadTags(format string, value []string) string {
 	// template of date to parse
 	var templateDateFormat = "2006-01-02 15:04:05"
 
