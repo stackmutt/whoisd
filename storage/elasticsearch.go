@@ -32,7 +32,8 @@ func (elastic *ElasticsearchRecord) Search(name string, query string) (map[strin
 }
 
 // SearchRelated - search data in the storage from related type or table
-func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string, query string) (map[string][]string, error) {
+func (elastic *ElasticsearchRecord) SearchRelated(
+	typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := elastic.searchRaw(typeTable, name, query)
 	if err != nil {
@@ -47,7 +48,8 @@ func (elastic *ElasticsearchRecord) SearchRelated(typeTable string, name string,
 }
 
 // SearchMultiple - search multiple records of data in the storage
-func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string, query string) (map[string][]string, error) {
+func (elastic *ElasticsearchRecord) SearchMultiple(
+	typeTable string, name string, query string) (map[string][]string, error) {
 
 	result, err := elastic.searchRaw(typeTable, name, query)
 	if err != nil {
@@ -69,24 +71,26 @@ func (elastic *ElasticsearchRecord) SearchMultiple(typeTable string, name string
 }
 
 // search raw data in the storage
-func (elastic *ElasticsearchRecord) searchRaw(typeTable string, name string, query string) ([]map[string][]string, error) {
+func (elastic *ElasticsearchRecord) searchRaw(
+	typeTable string, name string, query string) ([]map[string][]string, error) {
 
 	if len(typeTable) == 0 || len(name) == 0 || len(query) == 0 {
 		return nil, errors.New("Incomplete request, request parameters could not be empty")
 	}
 
-	var all []map[string][]string
+	var items []map[string][]string
 
-	url := "http://" + elastic.Host + ":" + strconv.Itoa(elastic.Port) + "/" + elastic.Index + "/" + typeTable
+	url := "http://" + elastic.Host + ":" + strconv.Itoa(elastic.Port) +
+		"/" + elastic.Index + "/" + typeTable
 	request := url + "/_search?q=" + name + ":" + query + ""
 	response, err := http.Get(request)
 	if err != nil {
-		return all, err
+		return items, err
 	}
 	jsondata, err := ioutil.ReadAll(response.Body)
 	response.Body.Close()
 	if err != nil {
-		return all, err
+		return items, err
 	}
 
 	type DataRecord struct {
@@ -99,17 +103,17 @@ func (elastic *ElasticsearchRecord) searchRaw(typeTable string, name string, que
 
 	result := new(DataRecord)
 	if err := json.Unmarshal(jsondata, result); err != nil {
-		return all, err
+		return items, err
 	}
 
 	if result.Hits.Total > 0 {
 		for _, record := range result.Hits.Hits {
 			element := transformData(record)
-			all = append(all, element)
+			items = append(items, element)
 		}
 	}
 
-	return all, nil
+	return items, nil
 }
 
 // Transformation data to requested format

@@ -1,5 +1,17 @@
 [
   {
+    "TLDs": ["xn--p1ai"],
+    "Fields" : {
+      "01": {
+        "key": "domain: ",
+        "name": ["name"],
+        "format": "{idn}",
+        "multiple": true,
+        "related": "name"
+      }
+    }
+  },
+  {
     "TLDs": ["tld"],
     "Fields" : {
       "01": {

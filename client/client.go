@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/takama/whoisd/storage"
+	"golang.org/x/net/idna"
 )
 
 const (
@@ -48,7 +49,10 @@ func ProcessClient(channel <-chan Record, repository *storage.Record) {
 	}()
 	for {
 		message = <-channel
-		query := string(message.Query)
+		query, err := idna.ToASCII(string(message.Query))
+		if err != nil {
+			query = string(message.Query)
+		}
 		data, ok := repository.Search(query)
 		message.Conn.Write([]byte(data))
 		log.Println(message.Conn.RemoteAddr().String(), query, ok)
